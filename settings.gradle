@@ -1,0 +1,2 @@
+rootProject.name='SeKunda'
+include ':app'

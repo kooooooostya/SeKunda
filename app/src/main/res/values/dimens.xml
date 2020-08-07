@@ -1,0 +1,17 @@
+<resources>
+    <dimen name="fab_margin">16dp</dimen>
+
+
+    <dimen name="text_size_large">36sp</dimen>
+    <dimen name="text_size_medium">24sp</dimen>
+
+
+    <dimen name="standard_padding">6dp</dimen>
+
+    <dimen name="large_padding">20dp</dimen>
+
+
+    <dimen name="size_recycler">300dp</dimen>
+
+
+</resources>
