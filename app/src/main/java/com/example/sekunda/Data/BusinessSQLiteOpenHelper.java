@@ -33,7 +33,6 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
     public BusinessSQLiteOpenHelper(@Nullable Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         mContext = context;
-
     }
 
     @Override
@@ -50,20 +49,27 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void insertBusinessAsync(Business business){
-        AddBusinessAsync task = new AddBusinessAsync();
+    void insertBusinessAsync(Business business){
+        AddBusinessAsync task = new AddBusinessAsync(getWritableDatabase());
         task.doInBackground(business);
     }
 
-    public void changeSecondsAsync(Business business){
-        ChangeTimeBusinessAsync task = new ChangeTimeBusinessAsync();
+    public void changeAsync(Business newBusiness, Business oldBusiness){
+        ChangeTimeBusinessAsync task = new ChangeTimeBusinessAsync(getWritableDatabase());
+        task.doInBackground(newBusiness, oldBusiness);
+    }
+    public void deleteBusinessAsync(Business business){
+        DeleteBusinessAsync task = new DeleteBusinessAsync(getWritableDatabase());
         task.doInBackground(business);
     }
 
     public ArrayList<Business> getFulledList(){
+
+
         ArrayList<Business> businessArrayList = new ArrayList<>();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
         String currentDate = simpleDateFormat.format(new Date());
+
 
         try {
             Cursor cursor = this.getWritableDatabase().query(DB_NAME,
@@ -87,7 +93,13 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
 
-    private class AddBusinessAsync extends AsyncTask<Business, Void, Boolean> {
+    private static class AddBusinessAsync extends AsyncTask<Business, Void, Boolean> {
+
+        SQLiteDatabase mDatabase;
+
+        AddBusinessAsync(SQLiteDatabase db) {
+            mDatabase = db;
+        }
         @Override
         protected Boolean doInBackground(Business... businesses) {
             try {
@@ -95,7 +107,7 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
                 contentValues.put(COLUMN_NAME, businesses[0].getName());
                 contentValues.put(COLUMN_SECONDS, businesses[0].getSeconds());
                 contentValues.put(COLUMN_DATE, businesses[0].getCalendarTime());
-                getWritableDatabase().insert(DB_NAME, null, contentValues);
+                mDatabase.insert(DB_NAME, null, contentValues);
                 return true;
             } catch (SQLException e) {
                 return false;
@@ -103,18 +115,45 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    private class ChangeTimeBusinessAsync extends AsyncTask<Business, Void, Boolean> {
+    private static class ChangeTimeBusinessAsync extends AsyncTask<Business, Void, Boolean> {
+
+        SQLiteDatabase mDatabase;
+
+        ChangeTimeBusinessAsync(SQLiteDatabase db) {
+            mDatabase = db;
+        }
+
         @Override
         protected Boolean doInBackground(Business... businesses) {
             try {
-
-                getWritableDatabase().delete(DB_NAME,
-                        COLUMN_NAME + " = ?", new String[]{businesses[0].getName()});
+                // businesses[0] - new, businesses[1] - old
+                mDatabase.delete(DB_NAME,
+                        COLUMN_NAME + " = ? ", new String[]{businesses[1].getName()});
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(COLUMN_NAME, businesses[0].getName());
                 contentValues.put(COLUMN_SECONDS, businesses[0].getSeconds());
-                contentValues.put(COLUMN_DATE, businesses[0].getTime());
-                getWritableDatabase().insert(DB_NAME, null, contentValues);
+                contentValues.put(COLUMN_DATE, businesses[0].getCalendarTime());
+                mDatabase.insert(DB_NAME, null, contentValues);
+                return true;
+            } catch (SQLException e) {
+                return false;
+            }
+        }
+    }
+
+    private static class DeleteBusinessAsync extends AsyncTask<Business, Void, Boolean> {
+
+        SQLiteDatabase mDatabase;
+
+        DeleteBusinessAsync(SQLiteDatabase db) {
+            mDatabase = db;
+        }
+
+        @Override
+        protected Boolean doInBackground(Business... businesses) {
+            try {
+                mDatabase.delete(DB_NAME,
+                        COLUMN_NAME + " = ? ", new String[]{businesses[0].getName()});
                 return true;
             } catch (SQLException e) {
                 return false;

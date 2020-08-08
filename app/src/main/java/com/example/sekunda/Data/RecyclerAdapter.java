@@ -47,7 +47,24 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
         return mBusinessArrayList;
     }
 
-    private class BusinessViewHolder extends RecyclerView.ViewHolder{
+
+
+    public void insertBusiness(Business business){
+        mBusinessArrayList.add(0, business);
+        mSQLiteOpenHelper.insertBusinessAsync(business);
+    }
+    public void changeBusiness(Business newBusiness, int index){
+        mSQLiteOpenHelper.changeAsync(newBusiness, mBusinessArrayList.get(index));
+        mBusinessArrayList.set(index, newBusiness);
+    }
+    public void deleteBusiness(Business business){
+        mSQLiteOpenHelper.deleteBusinessAsync(business);
+        mBusinessArrayList.remove(business);
+    }
+
+
+
+    private static class BusinessViewHolder extends RecyclerView.ViewHolder{
 
         TextView mTextViewName;
         TextView mTextViewTime;
@@ -57,15 +74,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
             mTextViewName = itemView.findViewById(R.id.item_view_holder_text_view_name);
             mTextViewTime = itemView.findViewById(R.id.item_view_holder_text_view_time);
         }
-    }
-
-    public void insertBusiness(Business business){
-        mBusinessArrayList.add(0, business);
-        mSQLiteOpenHelper.insertBusinessAsync(business);
-    }
-    public void changeBusiness(Business business, int index){
-        mBusinessArrayList.set(index, business);
-        mSQLiteOpenHelper.changeSecondsAsync(business);
     }
 
 }

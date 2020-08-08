@@ -1,11 +1,13 @@
 package com.example.sekunda.Data;
 
+import androidx.annotation.NonNull;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class Business implements Comparable{
+public class Business implements Comparable, Cloneable{
     private String mName;
     private int mSeconds;
     private Calendar mCalendar;
@@ -22,6 +24,12 @@ public class Business implements Comparable{
         mSeconds = seconds;
         mCalendar = calendar;
     }
+
+    public void setName(String name) {
+        mName = name;
+    }
+
+
 
     public Calendar getCalendar() {
         return mCalendar;
@@ -69,5 +77,12 @@ public class Business implements Comparable{
         if (o instanceof Business){
            return (int)(this.mSeconds * 100 - ((Business) o).mSeconds * 100) ;
         }else return 0;
+    }
+
+    @NonNull
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        super.clone();
+        return new Business(this.mName, this.mSeconds, this.mCalendar);
     }
 }

@@ -11,7 +11,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,8 +28,6 @@ public class SecFragment extends Fragment {
     private FloatingActionButton mActionButtonStop;
     private TextView mTextViewSec;
     private TextView mTextViewName;
-
-    //TODO sql !!!!!!!!!!!!!!!!!!!!!!
 
     private RecyclerAdapter mRecyclerAdapter;
 
@@ -98,11 +98,62 @@ public class SecFragment extends Fragment {
                 mTextViewName.setText("");
 
             }
-
-                // TODO add in sql
         });
 
+        final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
 
+            @Override
+            public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int direction) {
+
+                switch (direction){
+                    case ItemTouchHelper.LEFT:
+                        mCurrentBusiness = mRecyclerAdapter.getBusinessArrayList().get(viewHolder.getAdapterPosition());
+                        mRecyclerAdapter.deleteBusiness(mCurrentBusiness);
+                        mTextViewName.setText(mCurrentBusiness.getName());
+                        mActionButtonNew.setEnabled(false);
+                        mActionButtonStop.setEnabled(true);
+                        isTimerGoing = true;
+
+                        break;
+                    case ItemTouchHelper.RIGHT:
+                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        final int position = viewHolder.getAdapterPosition();
+
+                        View inputDialog = LayoutInflater.from(mContext).inflate(R.layout.input_dialog, null);
+                        final EditText editTextName = inputDialog.findViewById(R.id.input_dialog_editText);
+
+                        builder.setTitle("Rename task");
+                        builder.setView(inputDialog);
+                        editTextName.setText(mCurrentBusiness.getName());
+
+                        try {
+                            mCurrentBusiness = (Business)mRecyclerAdapter.getBusinessArrayList().get(position).clone();
+                        } catch (CloneNotSupportedException e) {
+                            e.printStackTrace();
+                        }
+                        builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mCurrentBusiness.setName(editTextName.getText().toString());
+                                mRecyclerAdapter.changeBusiness(mCurrentBusiness, position);
+
+                                mRecyclerAdapter.notifyItemChanged(position);
+                            }
+                        });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+
+                        break;
+                }
+            }
+        });
+
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
         return root;
     }
 
@@ -112,8 +163,6 @@ public class SecFragment extends Fragment {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                //TODO start timer
-
                 if(isTimerGoing){
                     mTextViewSec.setText(mCurrentBusiness.getTime());
                     mCurrentBusiness.addOneSecond();
