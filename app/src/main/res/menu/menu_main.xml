@@ -7,4 +7,11 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_history"
+        android:icon="@drawable/ic_history_black_24dp"
+        android:title="@string/menu_history"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="50"/>
 </menu>

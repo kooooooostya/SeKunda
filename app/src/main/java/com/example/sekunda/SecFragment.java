@@ -3,15 +3,21 @@ package com.example.sekunda;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,6 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.sekunda.Data.Business;
 import com.example.sekunda.Data.RecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class SecFragment extends Fragment {
 
@@ -34,13 +42,14 @@ public class SecFragment extends Fragment {
     private Context mContext;
 
     private boolean isTimerGoing = false;
-    private int mSeconds;
     private Business mCurrentBusiness;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_sec, container, false);
         mContext = root.getContext();
+
+
 
         mActionButtonNew = root.findViewById(R.id.sec_fab_new);
         mActionButtonStop = root.findViewById(R.id.sec_fab_stop);
@@ -57,6 +66,7 @@ public class SecFragment extends Fragment {
         // Because if don't do this cause null pointer exception
         mCurrentBusiness = new Business("", 0);
 
+        //TODO при закрытии приложения таймер идет дальше(если это надо)
         runTimer();
         mActionButtonNew.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,6 +161,18 @@ public class SecFragment extends Fragment {
                         break;
                 }
             }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                        .addSwipeLeftActionIcon(R.drawable.ic_play_arrow_black_24dp)
+                        .addSwipeLeftBackgroundColor(R.color.colorPrimary)
+                        .addSwipeRightActionIcon(R.drawable.ic_mode_edit_black_24dp)
+                        .addSwipeRightBackgroundColor(R.color.colorAccent)
+                        .create()
+                        .decorate();
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
         });
 
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
@@ -170,5 +192,11 @@ public class SecFragment extends Fragment {
                 handler.postDelayed(this, 1000);
             }
         });
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 }
