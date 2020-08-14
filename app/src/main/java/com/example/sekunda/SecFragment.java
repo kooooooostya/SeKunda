@@ -1,30 +1,33 @@
 package com.example.sekunda;
 
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.ContextMenu;
+import android.os.IBinder;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sekunda.Data.Business;
-import com.example.sekunda.Data.RecyclerAdapter;
+import com.example.sekunda.Data.BusinessRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
@@ -37,12 +40,14 @@ public class SecFragment extends Fragment {
     private TextView mTextViewSec;
     private TextView mTextViewName;
 
-    private RecyclerAdapter mRecyclerAdapter;
+    private BusinessRecyclerAdapter mRecyclerAdapter;
 
     private Context mContext;
 
     private boolean isTimerGoing = false;
     private Business mCurrentBusiness;
+    private TimerService mService;
+    private boolean mBound;
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +63,7 @@ public class SecFragment extends Fragment {
         mTextViewSec = root.findViewById(R.id.sec_text_view_sec);
         mTextViewName = root.findViewById(R.id.sec_text_view_name);
 
-        mRecyclerAdapter = new RecyclerAdapter(mContext);
+        mRecyclerAdapter = new BusinessRecyclerAdapter(mContext);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
         mRecyclerView.setAdapter(mRecyclerAdapter);
@@ -179,6 +184,38 @@ public class SecFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+//        Intent intent = new Intent(mContext, TimerService.class);
+//        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+//    private ServiceConnection mConnection = new ServiceConnection() {
+//
+//        @Override
+//        public void onServiceConnected(ComponentName className,
+//                                       IBinder service) {
+//            // We've bound to LocalService, cast the IBinder and get LocalService instance
+//            TimerService.TimerBinder binder = (TimerService.TimerBinder) service;
+//            mService = binder.getService();
+//            mBound = true;
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName arg0) {
+//            mBound = false;
+//        }
+//    };
+
+    @Override
+    public void onStop() {
+        super.onStop();
+//        if(mBound){
+//            getActivity().unbindService(mConnection);
+//            mBound = false;
+//        }
+
+    }
 
     private void runTimer(){
         final Handler handler = new Handler();
@@ -194,9 +231,13 @@ public class SecFragment extends Fragment {
         });
     }
 
+
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+    public void onDestroy() {
+        super.onDestroy();
+        if(isTimerGoing){
+            TimerService.startAction(getContext(), mCurrentBusiness.getSeconds());
+
+        }
     }
 }

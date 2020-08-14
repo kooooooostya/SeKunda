@@ -8,6 +8,8 @@
 
     <dimen name="standard_padding">6dp</dimen>
 
+    <dimen name="corner_radius">6dp</dimen>
+
     <dimen name="large_padding">20dp</dimen>
 
 

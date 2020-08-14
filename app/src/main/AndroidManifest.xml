@@ -9,6 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:name=".TimerService"
+            android:exported="false"></service>
+
+        <activity android:name=".HistoryActivity"></activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"

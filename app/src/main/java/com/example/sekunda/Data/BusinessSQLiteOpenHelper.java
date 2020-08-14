@@ -63,12 +63,11 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
         task.doInBackground(business);
     }
 
-    public ArrayList<Business> getFulledList(){
-
+    public ArrayList<Business> getFulledList(Calendar calendar){
 
         ArrayList<Business> businessArrayList = new ArrayList<>();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
-        String currentDate = simpleDateFormat.format(new Date());
+        String currentDate = simpleDateFormat.format(calendar.getTime());
 
 
         try {
@@ -76,8 +75,6 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
                     new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_SECONDS, COLUMN_DATE}, COLUMN_DATE + " = ? ", new String[]{currentDate},
                     null, null, null);
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
             if(cursor.moveToFirst()){
                 do {
                     Business business = new Business(cursor.getString(1),

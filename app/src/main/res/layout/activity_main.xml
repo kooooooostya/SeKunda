@@ -9,12 +9,15 @@
     tools:context=".MainActivity">
 
  <androidx.appcompat.widget.Toolbar
+     android:id="@+id/main_tool_bar"
      android:layout_width="match_parent"
      android:layout_height="wrap_content"
-     android:background="@color/colorAccent"
-     app:title="@string/app_name"
+     android:background="@color/colorPrimary"
+     app:layout_constraintStart_toStartOf="parent"
+     app:layout_constraintTop_toTopOf="parent"
      app:menu="@menu/menu_main"
-    />
+     app:title="@string/app_name" />
+
 
  <fragment
      android:id="@+id/nav_host_fragment"

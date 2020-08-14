@@ -12,16 +12,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.sekunda.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
-public class RecyclerAdapter extends RecyclerView.Adapter {
+public class BusinessRecyclerAdapter extends RecyclerView.Adapter {
 
     private ArrayList<Business> mBusinessArrayList;
     private BusinessSQLiteOpenHelper mSQLiteOpenHelper;
 
-    public RecyclerAdapter(Context context) {
+    public BusinessRecyclerAdapter(Context context) {
         BusinessSQLiteOpenHelper SQLiteOpenHelper = new BusinessSQLiteOpenHelper(context);
         mSQLiteOpenHelper = new BusinessSQLiteOpenHelper(context);
-        mBusinessArrayList = SQLiteOpenHelper.getFulledList();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        mBusinessArrayList = SQLiteOpenHelper.getFulledList(calendar);
+    }
+
+    public BusinessRecyclerAdapter(ArrayList<Business> arrayList) {
+        mBusinessArrayList = arrayList;
     }
 
     @NonNull
@@ -61,19 +69,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
         mSQLiteOpenHelper.deleteBusinessAsync(business);
         mBusinessArrayList.remove(business);
     }
+}
 
+class BusinessViewHolder extends RecyclerView.ViewHolder{
 
+    TextView mTextViewName;
+    TextView mTextViewTime;
 
-    private static class BusinessViewHolder extends RecyclerView.ViewHolder{
-
-        TextView mTextViewName;
-        TextView mTextViewTime;
-
-        BusinessViewHolder(@NonNull View itemView) {
-            super(itemView);
-            mTextViewName = itemView.findViewById(R.id.item_view_holder_text_view_name);
-            mTextViewTime = itemView.findViewById(R.id.item_view_holder_text_view_time);
-        }
+    BusinessViewHolder(@NonNull View itemView) {
+        super(itemView);
+        mTextViewName = itemView.findViewById(R.id.item_view_holder_text_view_name);
+        mTextViewTime = itemView.findViewById(R.id.item_view_holder_text_view_time);
     }
-
 }
