@@ -10,12 +10,21 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
+import com.example.sekunda.Data.Business;
+
 public class TimerService extends IntentService {
+
+
+    public static final String NAME = "TimerService";
+
     private static final String EXTRA_SECONDS = "EXTRA_SECONDS";
     private static final String EXTRA_IS_GOING = "EXTRA_IS_GOING";
 
     private int mSeconds;
     private boolean isTimerGoing;
+    private SecFragment mSecFragment;
+    private Business mBusiness;
+    private boolean isAppBeenClosed = false;
 
     private Binder mBinder = new TimerBinder();
 
@@ -25,8 +34,9 @@ public class TimerService extends IntentService {
      *
      * @param name Used to name the worker thread, important only for debugging.
      */
-    public TimerService(String name) {
+    public TimerService(String name, SecFragment fragment) {
         super(name);
+        mSecFragment = fragment;
     }
 
 
@@ -57,7 +67,7 @@ public class TimerService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        runTimer();
+
     }
 
 //    @Override
@@ -68,10 +78,6 @@ public class TimerService extends IntentService {
 //        }
 //    }
 
-    public int getSeconds() {
-        return mSeconds;
-    }
-
     public void setTimerGoing(boolean timerGoing) {
         isTimerGoing = timerGoing;
     }
@@ -80,20 +86,23 @@ public class TimerService extends IntentService {
         new Thread(new Runnable() {
             @Override
             public void run() {
+               // mBusiness = mSecFragment.getCurrentBusiness();
                 final Handler handler = new Handler();
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
                         if(isTimerGoing){
                             //mTextViewSec.setText(mCurrentBusiness.getTime());
-                            mSeconds++;
-                        }
+                            if(mSecFragment.isDetached()) mSecFragment.printInfo(mBusiness);
+                            mBusiness.addOneSecond();
+
                         handler.postDelayed(this, 1000);
+                        }
                     }
                 });
+
             }
         });
-
     }
 
     public class TimerBinder extends Binder{

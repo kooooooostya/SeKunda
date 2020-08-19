@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
@@ -16,7 +15,6 @@ import com.example.sekunda.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 public class DayPagerAdapter extends PagerAdapter {
 
@@ -55,10 +53,16 @@ public class DayPagerAdapter extends PagerAdapter {
         textViewDay.setText(day.getCalendarTime());
         textViewTotalTime.setText(day.getAllTime());
 
+        if (day.getBusinessArrayList().size() > 0){
+
+        }
         BusinessRecyclerAdapter businessRecyclerAdapter =
                 new BusinessRecyclerAdapter(day.getBusinessArrayList());
+
         recyclerView.setAdapter(businessRecyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+
+
         container.addView(itemView);
 
         return itemView;

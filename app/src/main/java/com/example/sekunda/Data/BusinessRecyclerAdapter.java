@@ -28,7 +28,7 @@ public class BusinessRecyclerAdapter extends RecyclerView.Adapter {
         mBusinessArrayList = SQLiteOpenHelper.getFulledList(calendar);
     }
 
-    public BusinessRecyclerAdapter(ArrayList<Business> arrayList) {
+    BusinessRecyclerAdapter(ArrayList<Business> arrayList) {
         mBusinessArrayList = arrayList;
     }
 
@@ -55,19 +55,51 @@ public class BusinessRecyclerAdapter extends RecyclerView.Adapter {
         return mBusinessArrayList;
     }
 
+    public int findIndex(Business business){
+        for (int i = 0; i < mBusinessArrayList.size(); i ++){
+            if(business.getName().equals(mBusinessArrayList.get(i).getName())) return i;
+        }
+        return -1;
+    }
 
+    // if incomplete task does not exist returns new Business
+    public Business findIncompleteTask(){
+        for (Business business : mBusinessArrayList){
+            if(!business.isComplete()) return business;
+        }
+        return new Business("", 0);
+    }
 
-    public void insertBusiness(Business business){
-        mBusinessArrayList.add(0, business);
-        mSQLiteOpenHelper.insertBusinessAsync(business);
+    // check name is free
+    private boolean checkNameIsFree(Business business){
+        for (Business business1 : mBusinessArrayList){
+            if(business.getName().equals(business1.getName())) return false;
+        }
+        return true;
+    }
+
+    // check name is free, if not free, make free and and to db
+    public Business insertBusiness(Business business){
+        if (!checkNameIsFree(business)){
+            business.setName(business.getName() + "1");
+            return insertBusiness(business);
+        }else {
+            mBusinessArrayList.add(0, business);
+            this.notifyItemInserted(0);
+            mSQLiteOpenHelper.insertBusinessAsync(business);
+            return business;
+        }
     }
     public void changeBusiness(Business newBusiness, int index){
         mSQLiteOpenHelper.changeAsync(newBusiness, mBusinessArrayList.get(index));
         mBusinessArrayList.set(index, newBusiness);
     }
-    public void deleteBusiness(Business business){
-        mSQLiteOpenHelper.deleteBusinessAsync(business);
-        mBusinessArrayList.remove(business);
+
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        mSQLiteOpenHelper.close();
     }
 }
 

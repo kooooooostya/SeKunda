@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class Day {
+class Day {
 
     private ArrayList<Business> mBusinessArrayList;
     private Calendar mCalendar;
     private int mAllSeconds;
 
-    public Day(Calendar calendar, Context context) {
+    Day(Calendar calendar, Context context) {
         mCalendar = calendar;
         mBusinessArrayList = getFulledArrayList(context);
         mAllSeconds = findTotalTime();
@@ -27,9 +27,9 @@ public class Day {
         return sum;
     }
 
-    public String getAllTime(){
+    String getAllTime(){
         String ans;
-        StringBuilder stringBuffer = new StringBuilder("");
+        StringBuilder stringBuffer = new StringBuilder();
         int hours = this.mAllSeconds / 3600;
         int minutes = this.mAllSeconds / 60 - hours * 60;
         int seconds = this.mAllSeconds % 60;
@@ -43,12 +43,12 @@ public class Day {
         return ans;
     }
 
-    public ArrayList<Business> getBusinessArrayList() {
+    ArrayList<Business> getBusinessArrayList() {
         return mBusinessArrayList;
     }
 
-    public String getCalendarTime(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
+    String getCalendarTime(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(BusinessSQLiteOpenHelper.SHORT_PATTERN, Locale.ENGLISH);
         return simpleDateFormat.format(this.mCalendar.getTime());
     }
 

@@ -4,35 +4,50 @@ import androidx.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 public class Business implements Comparable, Cloneable{
     private String mName;
     private int mSeconds;
-    private Calendar mCalendar;
+    private Calendar mTimeStart;
+    private boolean isComplete;
 
     public Business(String name, int seconds) {
         mName = name;
         mSeconds = seconds;
-        mCalendar = Calendar.getInstance();
-        Date date = new Date();
-        mCalendar.setTime(date);
+        mTimeStart = Calendar.getInstance();
+        isComplete = false;
+
     }
-    public Business(String name, int seconds, Calendar calendar) {
+
+    public Business(String name, int seconds, Calendar timeStart) {
         mName = name;
         mSeconds = seconds;
-        mCalendar = calendar;
+        mTimeStart = timeStart;
+        isComplete = false;
+
+    }
+    public Business(String name, int seconds, Calendar timeStart, boolean isComplete) {
+        mName = name;
+        mSeconds = seconds;
+        mTimeStart = timeStart;
+        this.isComplete = isComplete;
     }
 
     public void setName(String name) {
         mName = name;
     }
 
+    public boolean isComplete() {
+        return isComplete;
+    }
 
+    public void setComplete(boolean complete) {
+        isComplete = complete;
+    }
 
-    public Calendar getCalendar() {
-        return mCalendar;
+    public Calendar getTimeStart() {
+        return mTimeStart;
     }
 
     public String getName() {
@@ -67,15 +82,20 @@ public class Business implements Comparable, Cloneable{
         return ans;
     }
 
-    public String getCalendarTime(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
-        return simpleDateFormat.format(this.mCalendar.getTime());
+    public String getFullCalendarTime(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(BusinessSQLiteOpenHelper.FULL_PATTERN, Locale.ENGLISH);
+        return simpleDateFormat.format(this.mTimeStart.getTime());
+    }
+    // it is necessary to determine the current day in sql and select tasks for today
+    public String getShortCalendarTime(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(BusinessSQLiteOpenHelper.SHORT_PATTERN, Locale.ENGLISH);
+        return simpleDateFormat.format(this.mTimeStart.getTime());
     }
 
     @Override
     public int compareTo(Object o) {
         if (o instanceof Business){
-           return (int)(this.mSeconds * 100 - ((Business) o).mSeconds * 100) ;
+           return this.mSeconds * 100 - ((Business) o).mSeconds * 100;
         }else return 0;
     }
 
@@ -83,6 +103,6 @@ public class Business implements Comparable, Cloneable{
     @Override
     public Object clone() throws CloneNotSupportedException {
         super.clone();
-        return new Business(this.mName, this.mSeconds, this.mCalendar);
+        return new Business(this.mName, this.mSeconds, this.mTimeStart, isComplete);
     }
 }

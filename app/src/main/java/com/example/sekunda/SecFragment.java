@@ -1,24 +1,19 @@
 package com.example.sekunda;
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toolbar;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -30,13 +25,14 @@ import com.example.sekunda.Data.Business;
 import com.example.sekunda.Data.BusinessRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class SecFragment extends Fragment {
 
-    private RecyclerView mRecyclerView;
     private FloatingActionButton mActionButtonNew;
-    private FloatingActionButton mActionButtonStop;
     private TextView mTextViewSec;
     private TextView mTextViewName;
 
@@ -46,8 +42,13 @@ public class SecFragment extends Fragment {
 
     private boolean isTimerGoing = false;
     private Business mCurrentBusiness;
-    private TimerService mService;
-    private boolean mBound;
+    private int mIndexCurrentBusiness;
+
+
+    private Drawable mDrawableAdd;
+    private Drawable mDrawableStop;
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -55,70 +56,90 @@ public class SecFragment extends Fragment {
         mContext = root.getContext();
 
 
-
         mActionButtonNew = root.findViewById(R.id.sec_fab_new);
-        mActionButtonStop = root.findViewById(R.id.sec_fab_stop);
-        mActionButtonStop.setEnabled(false);
-        mRecyclerView = root.findViewById(R.id.sec_recycler_view);
+        mDrawableAdd = mActionButtonNew.getDrawable();
+        mDrawableStop = getActivity().getDrawable(R.drawable.ic_stop_black_24dp);
+
+
+        RecyclerView recyclerView = root.findViewById(R.id.sec_recycler_view);
         mTextViewSec = root.findViewById(R.id.sec_text_view_sec);
         mTextViewName = root.findViewById(R.id.sec_text_view_name);
 
         mRecyclerAdapter = new BusinessRecyclerAdapter(mContext);
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        mRecyclerView.setAdapter(mRecyclerAdapter);
+        try {
+            mCurrentBusiness = (Business) mRecyclerAdapter.findIncompleteTask().clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        mIndexCurrentBusiness = mRecyclerAdapter.findIndex(mCurrentBusiness);
 
-        // Because if don't do this cause null pointer exception
-        mCurrentBusiness = new Business("", 0);
-
-        //TODO при закрытии приложения таймер идет дальше(если это надо)
+        if(!mCurrentBusiness.isComplete() && !mCurrentBusiness.getName().equals("")){
+            long mil = new Date().getTime() - mCurrentBusiness.getTimeStart().getTime().getTime();
+            mCurrentBusiness.setSeconds((int)(mil / 1000));
+            printInfo(mCurrentBusiness);
+            isTimerGoing = true;
+            //TODO image should change
+            mActionButtonNew.setBackgroundDrawable(mDrawableStop);
+        }
         runTimer();
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        recyclerView.setAdapter(mRecyclerAdapter);
+
         mActionButtonNew.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mActionButtonNew.setEnabled(false);
-                mActionButtonStop.setEnabled(true);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                if(!isTimerGoing){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
 
-                View inputDialog = LayoutInflater.from(mContext).inflate(R.layout.input_dialog, null);
+                    View inputDialog = LayoutInflater.from(mContext).inflate(R.layout.input_dialog, null);
 
-                builder.setTitle("Write name of task");
-                builder.setView(inputDialog);
-                final EditText editTextName = inputDialog.findViewById(R.id.input_dialog_editText);
+                    builder.setTitle("Write name of task");
+                    builder.setView(inputDialog);
+                    final EditText editTextName = inputDialog.findViewById(R.id.input_dialog_editText);
 
-                builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mCurrentBusiness = new Business(editTextName.getText().toString(), 0);
-                        mTextViewName.setText(editTextName.getText().toString());
-                        isTimerGoing = true;
-                    }
-                });
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                    builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            if(editTextName.getText().length() != 0){
 
+                                Business business = new Business(editTextName.getText().toString(), 0);
+                                business.setComplete(false);
+                                try {
+                                    mCurrentBusiness = (Business)mRecyclerAdapter.insertBusiness(business).clone();
+                                } catch (CloneNotSupportedException e) {
+                                    e.printStackTrace();
+                                }
+                                mIndexCurrentBusiness = mRecyclerAdapter.findIndex(mCurrentBusiness);
+                                mTextViewName.setText(mCurrentBusiness.getName());
+                                isTimerGoing = true;
+                            }
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    mActionButtonNew.setBackgroundDrawable(mDrawableStop);
+                }else{
+                    isTimerGoing = false;
+                    mCurrentBusiness.setComplete(true);
+                    mRecyclerAdapter.changeBusiness(mCurrentBusiness, mIndexCurrentBusiness);
+                    mRecyclerAdapter.notifyItemChanged(mIndexCurrentBusiness);
+                    mTextViewSec.setText(R.string.time_to_do);
+                    mTextViewName.setText("");
+                    mActionButtonNew.setBackgroundDrawable(mDrawableAdd);
+                }
             }
         });
 
-        mActionButtonStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isTimerGoing = false;
-                mActionButtonStop.setEnabled(false);
-                mActionButtonNew.setEnabled(true);
-                mRecyclerAdapter.insertBusiness(mCurrentBusiness);
-                mRecyclerAdapter.notifyItemInserted(0);
-                mTextViewSec.setText(R.string.time_to_do);
-                mTextViewName.setText("");
-
-            }
-        });
 
         final ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, ItemTouchHelper.RIGHT|ItemTouchHelper.LEFT) {
             @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
 
@@ -127,42 +148,62 @@ public class SecFragment extends Fragment {
 
                 switch (direction){
                     case ItemTouchHelper.LEFT:
-                        mCurrentBusiness = mRecyclerAdapter.getBusinessArrayList().get(viewHolder.getAdapterPosition());
-                        mRecyclerAdapter.deleteBusiness(mCurrentBusiness);
-                        mTextViewName.setText(mCurrentBusiness.getName());
-                        mActionButtonNew.setEnabled(false);
-                        mActionButtonStop.setEnabled(true);
-                        isTimerGoing = true;
+                        if(!isTimerGoing){
+                            try {
+                                mCurrentBusiness = (Business)mRecyclerAdapter.getBusinessArrayList().get(viewHolder.getAdapterPosition()).clone();
+                            } catch (CloneNotSupportedException e) {
+                                e.printStackTrace();
+                            }
+                            mCurrentBusiness.setComplete(false);
+                            mIndexCurrentBusiness = mRecyclerAdapter.findIndex(mCurrentBusiness);
+
+                            mTextViewName.setText(mCurrentBusiness.getName());
+                            isTimerGoing = true;
+
+                        }else {
+                            Toast.makeText(mContext, "Finish the previous task first", Toast.LENGTH_LONG).show();
+                            mRecyclerAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                        }
 
                         break;
                     case ItemTouchHelper.RIGHT:
-                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                        final int position = viewHolder.getAdapterPosition();
+                        if(!isTimerGoing){
+                            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                            final int position = viewHolder.getAdapterPosition();
 
-                        View inputDialog = LayoutInflater.from(mContext).inflate(R.layout.input_dialog, null);
-                        final EditText editTextName = inputDialog.findViewById(R.id.input_dialog_editText);
+                            View inputDialog = LayoutInflater.from(mContext).inflate(R.layout.input_dialog, null);
+                            final EditText editTextName = inputDialog.findViewById(R.id.input_dialog_editText);
 
-                        builder.setTitle("Rename task");
-                        builder.setView(inputDialog);
-                        editTextName.setText(mCurrentBusiness.getName());
+                            builder.setTitle("Rename task");
+                            builder.setView(inputDialog);
+                            editTextName.setText(mCurrentBusiness.getName());
 
-                        try {
-                            mCurrentBusiness = (Business)mRecyclerAdapter.getBusinessArrayList().get(position).clone();
-                        } catch (CloneNotSupportedException e) {
-                            e.printStackTrace();
-                        }
-                        builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                mCurrentBusiness.setName(editTextName.getText().toString());
-                                mRecyclerAdapter.changeBusiness(mCurrentBusiness, position);
-
-                                mRecyclerAdapter.notifyItemChanged(position);
+                            try {
+                                mCurrentBusiness = (Business)mRecyclerAdapter.getBusinessArrayList().get(position).clone();
+                            } catch (CloneNotSupportedException e) {
+                                e.printStackTrace();
                             }
-                        });
-                        AlertDialog alertDialog = builder.create();
-                        alertDialog.show();
+                            builder.setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    mCurrentBusiness.setName(editTextName.getText().toString());
+                                    mRecyclerAdapter.changeBusiness(mCurrentBusiness, position);
+                                    mRecyclerAdapter.notifyItemChanged(position);
 
+                                }
+                            });
+                            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                @Override
+                                public void onCancel(DialogInterface dialog) {
+                                    mRecyclerAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                                }
+                            });
+                            AlertDialog alertDialog = builder.create();
+                            alertDialog.show();
+                        }else {
+                            Toast.makeText(mContext, "Finish the previous task first", Toast.LENGTH_LONG).show();
+                            mRecyclerAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                        }
                         break;
                 }
             }
@@ -180,41 +221,13 @@ public class SecFragment extends Fragment {
             }
         });
 
-        itemTouchHelper.attachToRecyclerView(mRecyclerView);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
         return root;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-//        Intent intent = new Intent(mContext, TimerService.class);
-//        getActivity().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
-//    private ServiceConnection mConnection = new ServiceConnection() {
-//
-//        @Override
-//        public void onServiceConnected(ComponentName className,
-//                                       IBinder service) {
-//            // We've bound to LocalService, cast the IBinder and get LocalService instance
-//            TimerService.TimerBinder binder = (TimerService.TimerBinder) service;
-//            mService = binder.getService();
-//            mBound = true;
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName arg0) {
-//            mBound = false;
-//        }
-//    };
-
-    @Override
-    public void onStop() {
-        super.onStop();
-//        if(mBound){
-//            getActivity().unbindService(mConnection);
-//            mBound = false;
-//        }
-
+    void printInfo(Business business){
+        mTextViewName.setText(business.getName());
+        mTextViewSec.setText(business.getTime());
     }
 
     private void runTimer(){
@@ -229,15 +242,5 @@ public class SecFragment extends Fragment {
                 handler.postDelayed(this, 1000);
             }
         });
-    }
-
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if(isTimerGoing){
-            TimerService.startAction(getContext(), mCurrentBusiness.getSeconds());
-
-        }
     }
 }
