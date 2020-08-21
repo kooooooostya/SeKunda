@@ -52,12 +52,17 @@ public class DayPagerAdapter extends PagerAdapter {
 
         textViewDay.setText(day.getCalendarTime());
         textViewTotalTime.setText(day.getAllTime());
-
-        if (day.getBusinessArrayList().size() > 0){
-
+        BusinessRecyclerAdapter businessRecyclerAdapter;
+        if (day.getBusinessArrayList().size() == 0){
+            ArrayList<Business> arrayList = new ArrayList();
+            arrayList.add(new Business("Nothing Today", 0));
+            businessRecyclerAdapter =
+                    new BusinessRecyclerAdapter(arrayList);
+        }else {
+            businessRecyclerAdapter =
+                    new BusinessRecyclerAdapter(day.getBusinessArrayList());
         }
-        BusinessRecyclerAdapter businessRecyclerAdapter =
-                new BusinessRecyclerAdapter(day.getBusinessArrayList());
+
 
         recyclerView.setAdapter(businessRecyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));

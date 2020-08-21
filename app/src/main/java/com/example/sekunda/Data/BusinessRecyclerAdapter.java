@@ -94,13 +94,6 @@ public class BusinessRecyclerAdapter extends RecyclerView.Adapter {
         mSQLiteOpenHelper.changeAsync(newBusiness, mBusinessArrayList.get(index));
         mBusinessArrayList.set(index, newBusiness);
     }
-
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        mSQLiteOpenHelper.close();
-    }
 }
 
 class BusinessViewHolder extends RecyclerView.ViewHolder{

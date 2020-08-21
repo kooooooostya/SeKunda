@@ -17,11 +17,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Objects;
 
 public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "Business_db";
-    private static int DB_VERSION = 1;
+    private static int DB_VERSION = 3;
     private static final String COLUMN_ID = "_id";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_SECONDS = "seconds";
@@ -32,10 +33,16 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
     static final String SHORT_PATTERN = "dd-MM-yyyy";
 
     private Context mContext;
+    private static boolean isDeletedToday = false;
 
-    BusinessSQLiteOpenHelper(@Nullable Context context) {
+    BusinessSQLiteOpenHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         mContext = context;
+        if (!isDeletedToday && Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
+            // TODO прщтестить не в пятницу
+            deleteOutdatedBusinessAsync(Calendar.getInstance());
+        }
+        isDeletedToday = true;
     }
 
     @Override
@@ -68,9 +75,11 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
         ChangeTimeBusinessAsync task = new ChangeTimeBusinessAsync(getWritableDatabase());
         task.doInBackground(newBusiness, oldBusiness);
     }
-    void deleteBusinessAsync(Business business){
-        DeleteBusinessAsync task = new DeleteBusinessAsync(getWritableDatabase());
-        task.doInBackground(business);
+
+    private void deleteOutdatedBusinessAsync(Calendar calendar){
+        DeleteOutdatedBusinessAsync task =
+                new DeleteOutdatedBusinessAsync(getWritableDatabase(), calendar);
+        task.execute();
     }
 
     ArrayList<Business> getFulledList(Calendar calendar){
@@ -85,7 +94,6 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
                     new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_SECONDS, COLUMN_SHORT_DATE, COLUMN_START_DATE, COLUMN_IS_COMPLETE},
                     COLUMN_SHORT_DATE + " = ?", new String[]{shortDateString},
                     null, null, COLUMN_SECONDS + " DESC");
-// TODO данные теряются дата становиться на 112 часов больше
             if(cursor.moveToFirst()){
                 do {
                     if(cursor.getInt(5) == 1){
@@ -94,8 +102,7 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
                         businessArrayList.add(business);
                     }else {
                         Calendar calendar1 = Calendar.getInstance();
-                        calendar1.setTime(fullDate.parse(cursor.getString(4)));
-                        String s = fullDate.format(calendar1.getTime());
+                        calendar1.setTime(Objects.requireNonNull(fullDate.parse(cursor.getString(4))));
                         Business business = new Business(cursor.getString(1),
                                 cursor.getInt(2), calendar1, false);
                         businessArrayList.add(business);
@@ -164,19 +171,32 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
         }
     }
 
-    private static class DeleteBusinessAsync extends AsyncTask<Business, Void, Boolean> {
+    private static class DeleteOutdatedBusinessAsync extends AsyncTask<Business, Void, Boolean> {
 
         SQLiteDatabase mDatabase;
+        Calendar mDeleteBeforeThis;
 
-        DeleteBusinessAsync(SQLiteDatabase db) {
+        DeleteOutdatedBusinessAsync(SQLiteDatabase db, Calendar calendar) {
             mDatabase = db;
+            calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - 7);
+            mDeleteBeforeThis = calendar;
         }
 
         @Override
-        protected Boolean doInBackground(Business... businesses) {
+        protected Boolean doInBackground(@Nullable Business... businesses) {
             try {
-                mDatabase.delete(DB_NAME,
-                        COLUMN_NAME + " = ? ", new String[]{businesses[0].getName()});
+                SimpleDateFormat shortDate = new SimpleDateFormat(SHORT_PATTERN, Locale.ENGLISH);
+                int i;
+                // this is necessary to stop the cycle, if there are no tasks in 7 days, then the cycle will stop
+                int stepToStop = 7;
+                do{
+                   i = mDatabase.delete(DB_NAME,
+                            COLUMN_SHORT_DATE + " = ? ",
+                            new String[]{shortDate.format(mDeleteBeforeThis.getTime())});
+                   if(i > 0) stepToStop = 7;
+                   else stepToStop--;
+                }while (stepToStop > 0);
+
                 return true;
             } catch (SQLException e) {
                 return false;

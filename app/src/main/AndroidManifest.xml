@@ -3,17 +3,15 @@
     package="com.example.sekunda">
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <service
-            android:name=".TimerService"
-            android:exported="false"></service>
 
-        <activity android:name=".HistoryActivity"></activity>
+        <activity android:name=".HistoryActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
