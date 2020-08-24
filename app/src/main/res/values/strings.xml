@@ -20,7 +20,8 @@
     <string name="menu_history">History</string>
 
     <string name="history_activity">History</string>
-
+    <string name="settings_theme">Dark Theme</string>
+    <string name="settings">Settings</string>
 
 
 </resources>

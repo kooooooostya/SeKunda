@@ -39,7 +39,6 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
         super(context, DB_NAME, null, DB_VERSION);
         mContext = context;
         if (!isDeletedToday && Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
-            // TODO прщтестить не в пятницу
             deleteOutdatedBusinessAsync(Calendar.getInstance());
         }
         isDeletedToday = true;

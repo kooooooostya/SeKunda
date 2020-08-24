@@ -1,14 +1,20 @@
 package com.example.sekunda;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+
 import androidx.annotation.NonNull;
+
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+
+import com.example.sekunda.Data.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         Toolbar toolbar = findViewById(R.id.main_tool_bar);
         setSupportActionBar(toolbar);
+
     }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -29,7 +36,9 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_settings:
-                //TODO дописать настройки
+                //TODO больще штук добавить
+                SettingsFragment settingsFragment = new SettingsFragment();
+                settingsFragment.show(getSupportFragmentManager(), "gg");
                 return true;
         }
         return super.onOptionsItemSelected(item);

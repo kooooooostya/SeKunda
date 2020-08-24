@@ -69,7 +69,6 @@ public class SecFragment extends Fragment {
             mCurrentBusiness.setSeconds((int)(mil / 1000));
             printInfo(mCurrentBusiness);
             isTimerGoing = true;
-            //TODO image should change
             mActionButtonNew.setImageResource(R.drawable.ic_stop_black_24dp);
 
         }
@@ -111,8 +110,7 @@ public class SecFragment extends Fragment {
                         }
                     });
 
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
+                    builder.create().show();
 
                 }else{
                     isTimerGoing = false;
@@ -195,8 +193,8 @@ public class SecFragment extends Fragment {
                                 mRecyclerAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
                             }
                         });
-                        AlertDialog alertDialog = builder.create();
-                        alertDialog.show();
+                        builder.create().show();
+
                     }else {
                         Toast.makeText(mContext, "Finish the previous task first", Toast.LENGTH_LONG).show();
                         mRecyclerAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
