@@ -10,6 +10,8 @@ import android.view.View;
 
 import com.example.sekunda.Data.DayPagerAdapter;
 
+import java.util.Objects;
+
 public class HistoryActivity extends AppCompatActivity {
 
     ViewPager mViewPager;
@@ -22,7 +24,7 @@ public class HistoryActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.history_toolbar);
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         toolbar.setTitle(R.string.history_activity);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

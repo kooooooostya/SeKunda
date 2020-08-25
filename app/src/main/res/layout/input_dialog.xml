@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <EditText
         android:id="@+id/input_dialog_editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_marginStart="@dimen/large_padding"
-        android:layout_marginEnd="@dimen/large_padding"
-        android:inputType="text"
+
         android:autofillHints="@string/hint_write_name"
-        android:hint="@string/hint_write_name"/>
+        android:layout_marginStart="@dimen/large_padding"
+        android:ems="10"
+        android:hint="@string/hint_write_name"
+        android:inputType="text" />
 
 
 </LinearLayout>

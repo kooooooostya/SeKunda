@@ -1,9 +1,14 @@
 package com.example.sekunda;
 
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -14,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -26,10 +32,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Date;
 
+
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator;
 
 public class SecFragment extends Fragment {
 
+    private static final int CHANNEL_ID = 152;
     private FloatingActionButton mActionButtonNew;
     private TextView mTextViewSec;
     private TextView mTextViewName;
@@ -106,6 +114,7 @@ public class SecFragment extends Fragment {
                                 mTextViewName.setText(mCurrentBusiness.getName());
                                 isTimerGoing = true;
                                 mActionButtonNew.setImageResource(R.drawable.ic_stop_black_24dp);
+                                createNotification();
                             }
                         }
                     });
@@ -120,6 +129,7 @@ public class SecFragment extends Fragment {
                     mTextViewSec.setText(R.string.time_to_do);
                     mTextViewName.setText("");
                     mActionButtonNew.setImageResource(R.drawable.ic_play_arrow_black_24dp);
+                    cancelNotification();
                 }
             }
         });
@@ -154,7 +164,7 @@ public class SecFragment extends Fragment {
                         mTextViewName.setText(mCurrentBusiness.getName());
                         isTimerGoing = true;
                         mActionButtonNew.setImageResource(R.drawable.ic_stop_black_24dp);
-
+                        createNotification();
                     }else {
                         Toast.makeText(mContext, "Finish the previous task first", Toast.LENGTH_LONG).show();
                         mRecyclerAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
@@ -196,7 +206,7 @@ public class SecFragment extends Fragment {
                         builder.create().show();
 
                     }else {
-                        Toast.makeText(mContext, "Finish the previous task first", Toast.LENGTH_LONG).show();
+                        Toast.makeText(mContext, getString(R.string.toast_finish_first), Toast.LENGTH_LONG).show();
                         mRecyclerAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
                     }
                     break;
@@ -236,5 +246,55 @@ public class SecFragment extends Fragment {
                 handler.postDelayed(this, 1000);
             }
         });
+    }
+
+
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel(String.valueOf(CHANNEL_ID), name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = requireActivity().
+                    getSystemService(NotificationManager.class);
+
+            assert notificationManager != null;
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+    // Creates notification
+    private void createNotification(){
+        createNotificationChannel();
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, String.valueOf(CHANNEL_ID));
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext,
+                0, MainActivity.newIntent(mContext), 0);
+
+        //TODO change icon
+        builder.setContentText(getString(R.string.channel_description))
+                .setSmallIcon(R.drawable.ic_play_arrow_black_24dp)
+        .setContentIntent(pendingIntent)
+        .setContentTitle(getString(R.string.app_name))
+        .setPriority(Notification.PRIORITY_DEFAULT);
+
+        NotificationManager notificationManager = (NotificationManager)
+                requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
+        assert notificationManager != null;
+        notificationManager.notify(CHANNEL_ID, builder.build());
+    }
+
+    //Cancel Notification
+    private void cancelNotification(){
+        NotificationManager notificationManager = (NotificationManager)
+                requireActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
+        notificationManager.cancel(CHANNEL_ID);
+
     }
 }

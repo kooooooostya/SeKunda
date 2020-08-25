@@ -1,6 +1,7 @@
 package com.example.sekunda;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -50,5 +51,9 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
 
+    }
+
+    public static Intent newIntent(Context context){
+        return new Intent(context, MainActivity.class);
     }
 }
