@@ -1,4 +1,4 @@
-package com.example.sekunda;
+package com.example.sekunda.fragments;
 
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -28,6 +28,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.sekunda.Data.Business;
 import com.example.sekunda.Data.BusinessRecyclerAdapter;
+import com.example.sekunda.MainActivity;
+import com.example.sekunda.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Date;
@@ -38,13 +40,12 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 public class SecFragment extends Fragment {
 
     private static final int CHANNEL_ID = 152;
+
     private FloatingActionButton mActionButtonNew;
     private TextView mTextViewSec;
     private TextView mTextViewName;
 
     private BusinessRecyclerAdapter mRecyclerAdapter;
-
-    private Context mContext;
 
     private boolean isTimerGoing = false;
     private Business mCurrentBusiness;
@@ -54,7 +55,6 @@ public class SecFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         final View root = inflater.inflate(R.layout.fragment_sec, container, false);
-        mContext = root.getContext();
 
         mContainer = container;
         mActionButtonNew = root.findViewById(R.id.sec_fab_new);
@@ -63,7 +63,7 @@ public class SecFragment extends Fragment {
         mTextViewSec = root.findViewById(R.id.sec_text_view_sec);
         mTextViewName = root.findViewById(R.id.sec_text_view_name);
 
-        mRecyclerAdapter = new BusinessRecyclerAdapter(mContext);
+        mRecyclerAdapter = new BusinessRecyclerAdapter(requireContext());
 
         try {
             mCurrentBusiness = (Business) mRecyclerAdapter.findIncompleteTask().clone();
@@ -78,11 +78,10 @@ public class SecFragment extends Fragment {
             printInfo(mCurrentBusiness);
             isTimerGoing = true;
             mActionButtonNew.setImageResource(R.drawable.ic_stop_black_24dp);
-
         }
         runTimer();
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         recyclerView.setAdapter(mRecyclerAdapter);
 
         mActionButtonNew.setOnClickListener(new View.OnClickListener() {
@@ -90,9 +89,9 @@ public class SecFragment extends Fragment {
             public void onClick(View v) {
 
                 if(!isTimerGoing){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
 
-                    View inputDialog = LayoutInflater.from(mContext).inflate(R.layout.input_dialog, container, false);
+                    View inputDialog = LayoutInflater.from(requireContext()).inflate(R.layout.input_dialog, container, false);
 
                     builder.setTitle("Write name of task");
                     builder.setView(inputDialog);
@@ -166,17 +165,17 @@ public class SecFragment extends Fragment {
                         mActionButtonNew.setImageResource(R.drawable.ic_stop_black_24dp);
                         createNotification();
                     }else {
-                        Toast.makeText(mContext, "Finish the previous task first", Toast.LENGTH_LONG).show();
+                        Toast.makeText(requireContext(), "Finish the previous task first", Toast.LENGTH_LONG).show();
                         mRecyclerAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
                     }
 
                     break;
                 case ItemTouchHelper.RIGHT:
                     if(!isTimerGoing){
-                        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                         final int position = viewHolder.getAdapterPosition();
 
-                        View inputDialog = LayoutInflater.from(mContext).inflate(R.layout.input_dialog,  mContainer, false);
+                        View inputDialog = LayoutInflater.from(requireContext()).inflate(R.layout.input_dialog,  mContainer, false);
                         final EditText editTextName = inputDialog.findViewById(R.id.input_dialog_editText);
 
                         builder.setTitle("Rename task");
@@ -206,7 +205,7 @@ public class SecFragment extends Fragment {
                         builder.create().show();
 
                     }else {
-                        Toast.makeText(mContext, getString(R.string.toast_finish_first), Toast.LENGTH_LONG).show();
+                        Toast.makeText(requireContext(), getString(R.string.toast_finish_first), Toast.LENGTH_LONG).show();
                         mRecyclerAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
                     }
                     break;
@@ -217,9 +216,9 @@ public class SecFragment extends Fragment {
         public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder,
                                 float dX, float dY, int actionState, boolean isCurrentlyActive) {
             new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(mContext, R.color.colorPrimaryLight))
+                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryLight))
                     .addSwipeLeftActionIcon(R.drawable.ic_play_arrow_black_24dp)
-                    .addSwipeRightBackgroundColor(ContextCompat.getColor(mContext, R.color.colorPrimaryDark))
+                    .addSwipeRightBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark))
                     .addSwipeRightActionIcon(R.drawable.ic_mode_edit_black_24dp)
                     .create()
                     .decorate();
@@ -271,9 +270,9 @@ public class SecFragment extends Fragment {
     // Creates notification
     private void createNotification(){
         createNotificationChannel();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, String.valueOf(CHANNEL_ID));
-        PendingIntent pendingIntent = PendingIntent.getActivity(mContext,
-                0, MainActivity.newIntent(mContext), 0);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), String.valueOf(CHANNEL_ID));
+        PendingIntent pendingIntent = PendingIntent.getActivity(requireContext(),
+                0, MainActivity.newIntent(requireContext()), 0);
 
         //TODO change icon
         builder.setContentText(getString(R.string.channel_description))

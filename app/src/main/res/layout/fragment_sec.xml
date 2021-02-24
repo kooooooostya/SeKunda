@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context=".SecFragment">
+    tools:context=".fragments.SecFragment">
 
     <TextView
         android:layout_width="wrap_content"
@@ -50,6 +50,7 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/sec_fab_new"
+        android:contentDescription="@string/add_button_cd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_add_black_24dp"

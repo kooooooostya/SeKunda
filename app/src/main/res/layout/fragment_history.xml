@@ -1,22 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".HistoryActivity">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/history_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ToolBarStyle"
-        app:title="@string/history_activity" />
+    tools:context=".fragments.HistoryFragment">
 
     <androidx.viewpager.widget.ViewPager
-        android:layout_margin="@dimen/large_padding"
         android:id="@+id/history_pager"
+        android:layout_margin="@dimen/large_padding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

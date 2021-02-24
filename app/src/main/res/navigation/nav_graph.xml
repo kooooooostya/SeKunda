@@ -6,7 +6,35 @@
     app:startDestination="@id/secFragment">
     <fragment
         android:id="@+id/secFragment"
-        android:name="com.example.sekunda.SecFragment"
+        android:name="com.example.sekunda.fragments.SecFragment"
         android:label="fragment_sec"
-        tools:layout="@layout/fragment_sec" />
+        tools:layout="@layout/fragment_sec" >
+        <action
+            android:id="@+id/action_secFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_open_exit" />
+        <action
+            android:id="@+id/action_secFragment_to_historyFragment"
+            app:destination="@id/historyFragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:popExitAnim="@anim/fragment_open_exit" />
+    </fragment>
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.sekunda.fragments.HistoryFragment"
+        android:label="activity_history"
+        tools:layout="@layout/fragment_history" >
+        <action
+            android:id="@+id/action_historyFragment_to_secFragment"
+            app:destination="@id/secFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/settingsFragment"
+        android:name="com.example.sekunda.fragments.SettingsFragment"
+        android:label="SettingsFragment" >
+        <action
+            android:id="@+id/action_settingsFragment_to_secFragment"
+            app:destination="@id/secFragment" />
+    </dialog>
 </navigation>

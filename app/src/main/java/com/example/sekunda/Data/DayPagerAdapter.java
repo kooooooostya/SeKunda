@@ -18,14 +18,13 @@ import java.util.Calendar;
 
 public class DayPagerAdapter extends PagerAdapter {
 
-    private ArrayList<Day> mDayArrayList;
-    private Context mContext;
+    private final ArrayList<Day> mDayArrayList;
+    private final Context mContext;
     private static final int PAGE_COUNT = 7;
 
     public DayPagerAdapter(Context context) {
         mContext = context;
         mDayArrayList = getFulledDayList();
-
     }
 
     @Override
@@ -63,10 +62,8 @@ public class DayPagerAdapter extends PagerAdapter {
                     new BusinessRecyclerAdapter(day.getBusinessArrayList());
         }
 
-
         recyclerView.setAdapter(businessRecyclerAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-
 
         container.addView(itemView);
 

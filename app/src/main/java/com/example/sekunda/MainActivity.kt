@@ -1,59 +1,48 @@
-package com.example.sekunda;
+package com.example.sekunda
 
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
+import androidx.navigation.Navigation
+import com.example.sekunda.fragments.SettingsFragment
 
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-
-
-import androidx.annotation.NonNull;
-
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar;
-
-import com.example.sekunda.Data.SettingsFragment;
-
-public class MainActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        Toolbar toolbar = findViewById(R.id.main_tool_bar);
-        setSupportActionBar(toolbar);
-
+class MainActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        val toolbar = findViewById<Toolbar>(R.id.main_tool_bar)
+        setSupportActionBar(toolbar)
     }
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_history:
-                Intent intent = new Intent(getApplicationContext(), HistoryActivity.class);
-                startActivity(intent);
-                return true;
 
-            case R.id.action_settings:
-                //TODO больще штук добавить
-                SettingsFragment settingsFragment = new SettingsFragment();
-                settingsFragment.show(getSupportFragmentManager(), "gg");
-                return true;
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_history -> {
+                Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.historyFragment)
+                return true
+            }
+            R.id.action_settings -> {
+                Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.settingsFragment)
+                return true
+            }
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
-
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return super.onCreateOptionsMenu(menu)
     }
 
-    public static Intent newIntent(Context context){
-        return new Intent(context, MainActivity.class);
+    companion object {
+        @JvmStatic
+        fun newIntent(context: Context?): Intent {
+            return Intent(context, MainActivity::class.java)
+        }
     }
 }
