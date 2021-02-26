@@ -22,7 +22,7 @@ import java.util.Objects;
 public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "Business_db";
-    private static int DB_VERSION = 3;
+    private static int DB_VERSION = 1;
     private static final String COLUMN_ID = "_id";
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_SECONDS = "seconds";
@@ -32,10 +32,10 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
     static final String FULL_PATTERN = "ss-mm-HH-dd-MM-yyyy";
     static final String SHORT_PATTERN = "dd-MM-yyyy";
 
-    private Context mContext;
+    private final Context mContext;
     private static boolean isDeletedToday = false;
 
-    BusinessSQLiteOpenHelper(Context context) {
+    public BusinessSQLiteOpenHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         mContext = context;
         if (!isDeletedToday && Calendar.getInstance().get(Calendar.DAY_OF_WEEK) == Calendar.FRIDAY){
@@ -65,12 +65,12 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    void insertBusinessAsync(Business business){
+    public void insertBusinessAsync(Business business){
         AddBusinessAsync task = new AddBusinessAsync(getWritableDatabase());
         task.doInBackground(business);
     }
 
-    void changeAsync(Business newBusiness, Business oldBusiness){
+    public void changeAsync(Business newBusiness, Business oldBusiness){
         ChangeTimeBusinessAsync task = new ChangeTimeBusinessAsync(getWritableDatabase());
         task.doInBackground(newBusiness, oldBusiness);
     }
@@ -81,7 +81,7 @@ public class BusinessSQLiteOpenHelper extends SQLiteOpenHelper {
         task.execute();
     }
 
-    ArrayList<Business> getFulledList(Calendar calendar){
+    public ArrayList<Business> getFulledList(Calendar calendar){
 
         ArrayList<Business> businessArrayList = new ArrayList<>();
         SimpleDateFormat shortDate = new SimpleDateFormat(SHORT_PATTERN, Locale.ENGLISH);

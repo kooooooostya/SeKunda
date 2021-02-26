@@ -5,22 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context=".fragments.SecFragment">
+    tools:context=".fragments.secFragment.SecFragment">
 
     <TextView
+        android:id="@+id/secTextViewName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/sec_text_view_name"
-        app:layout_constraintBottom_toTopOf="@+id/sec_text_view_sec"
+        android:layout_marginBottom="187dp"
+        android:gravity="center"
+        android:textSize="@dimen/text_size_medium"
+        app:layout_constraintBottom_toBottomOf="@+id/secTextViewTimer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:textSize="@dimen/text_size_medium"
-        android:gravity="center"
         app:layout_constraintVertical_bias="0.8" />
 
     <TextView
-        android:id="@+id/sec_text_view_sec"
+        android:id="@+id/secTextViewTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -34,22 +35,22 @@
         app:layout_constraintVertical_bias="0.25" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/sec_recycler_view"
+        android:id="@+id/secRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:layout_margin="@dimen/large_padding"
 
 
-        app:layout_constraintBottom_toTopOf="@+id/sec_fab_new"
+        app:layout_constraintBottom_toTopOf="@+id/secButtonNew"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_min="@dimen/size_recycler"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sec_text_view_sec"
+        app:layout_constraintTop_toBottomOf="@+id/secTextViewTimer"
         app:layout_constraintVertical_bias="0.04"
         tools:listitem="@layout/view_holder_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/sec_fab_new"
+        android:id="@+id/secButtonNew"
         android:contentDescription="@string/add_button_cd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

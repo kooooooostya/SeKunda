@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.example.sekunda.R;
+import com.example.sekunda.fragments.secFragment.BusinessRecyclerAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;

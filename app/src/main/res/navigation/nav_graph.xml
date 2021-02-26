@@ -6,7 +6,7 @@
     app:startDestination="@id/secFragment">
     <fragment
         android:id="@+id/secFragment"
-        android:name="com.example.sekunda.fragments.SecFragment"
+        android:name="com.example.sekunda.fragments.secFragment.SecFragment"
         android:label="fragment_sec"
         tools:layout="@layout/fragment_sec" >
         <action
