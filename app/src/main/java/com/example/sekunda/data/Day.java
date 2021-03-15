@@ -1,6 +1,4 @@
-package com.example.sekunda.Data;
-
-import android.content.Context;
+package com.example.sekunda.data;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,9 +11,9 @@ class Day {
     private Calendar mCalendar;
     private int mAllSeconds;
 
-    Day(Calendar calendar, Context context) {
+    Day(Calendar calendar) {
         mCalendar = calendar;
-        mBusinessArrayList = getFulledArrayList(context);
+        mBusinessArrayList = getFulledArrayList();
         mAllSeconds = findTotalTime();
     }
 
@@ -48,14 +46,18 @@ class Day {
     }
 
     String getCalendarTime(){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(BusinessSQLiteOpenHelper.SHORT_PATTERN, Locale.ENGLISH);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Business.DMY_PATTERN, Locale.ENGLISH);
         return simpleDateFormat.format(this.mCalendar.getTime());
     }
 
-    private ArrayList<Business> getFulledArrayList(Context context){
-        BusinessSQLiteOpenHelper sqLiteOpenHelper = new BusinessSQLiteOpenHelper(context);
-        ArrayList<Business> businessArrayList = sqLiteOpenHelper.getFulledList(mCalendar);
-        sqLiteOpenHelper.close();
+    private ArrayList<Business> getFulledArrayList(){
+        //BusinessSQLiteOpenHelper sqLiteOpenHelper = new BusinessSQLiteOpenHelper(context);
+//        <Business> businessArrayList = SeKaundaApplication.db.businessDao().
+//                getFulledList(new SimpleDateFormat(Business.SHORT_PATTERN, Locale.ENGLISH).format(mCalendar));
+
+        //TODO заглушка
+        ArrayList businessArrayList = new ArrayList<Business>();
+        //sqLiteOpenHelper.close();
         return businessArrayList;
     }
 

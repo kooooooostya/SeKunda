@@ -5,13 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.sekunda.Data.Business
+import com.example.sekunda.data.Business
 import com.example.sekunda.R
 
-class BusinessRecyclerAdapter internal constructor(arrayList: ArrayList<Business>) :
+class BusinessRecyclerAdapter(private val presenter: SecPresenter) :
         RecyclerView.Adapter<BusinessRecyclerAdapter.BusinessViewHolder>() {
-
-    private val businessArrayList: ArrayList<Business> = arrayList
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusinessViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.view_holder_item, parent, false)
@@ -19,16 +17,16 @@ class BusinessRecyclerAdapter internal constructor(arrayList: ArrayList<Business
     }
 
     override fun onBindViewHolder(holder:BusinessViewHolder, position: Int) {
-        holder.mTextViewTime.text = businessArrayList[position].time
-        holder.mTextViewName.text = businessArrayList[position].name
+        holder.mTextViewTime.text = presenter.getBusinessList()[position].time
+        holder.mTextViewName.text = presenter.getBusinessList()[position].name
     }
 
     override fun getItemCount(): Int {
-        return businessArrayList.size
+        return presenter.getBusinessList().size
     }
 
     fun getItem(index: Int): Business{
-        return businessArrayList[index]
+        return presenter.getBusinessList()[index]
     }
 
     inner class BusinessViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

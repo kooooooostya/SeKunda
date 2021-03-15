@@ -1,13 +1,13 @@
 package com.example.sekunda.fragments.secFragment
 
 import android.os.Handler
-import com.example.sekunda.Data.Business
+import com.example.sekunda.data.Business
 import com.example.sekunda.R
 import com.example.sekunda.SeKaundaApplication
 import moxy.MvpPresenter
 class SecPresenter : MvpPresenter<SecView>(){
 
-    private val secModel = SecModel(SeKaundaApplication.instance.applicationContext)
+    private val secModel = SecModel(this)
     private var isTimerGoing = false
     private var currentBusiness: Business? = null
     private var indexCurrentBusiness = 0
@@ -21,7 +21,6 @@ class SecPresenter : MvpPresenter<SecView>(){
             viewState.showInputDialog()
         } else {
             isTimerGoing = false
-            currentBusiness?.isComplete = true
             secModel.changeBusiness(currentBusiness!!, indexCurrentBusiness)
             viewState.stopTimer(currentBusiness!!, indexCurrentBusiness)
         }
@@ -31,6 +30,7 @@ class SecPresenter : MvpPresenter<SecView>(){
         currentBusiness = business
         secModel.insertBusiness(business)
         indexCurrentBusiness = secModel.getIndexOfElement(business)
+        viewState.notifyItemInserted(indexCurrentBusiness)
         isTimerGoing = true
     }
 
@@ -48,22 +48,13 @@ class SecPresenter : MvpPresenter<SecView>(){
     }
 
     fun getBusinessList() : ArrayList<Business>{
-        val arrayList = secModel.businessArrayList
-        val business = secModel.findIncompleteTask(arrayList)
-        if (business != null){
-            currentBusiness = business
-            indexCurrentBusiness = secModel.getIndexOfElement(currentBusiness!!)
-            isTimerGoing = true
-        }
-        return arrayList
+        return secModel.businessArrayList
     }
 
     fun resumeBusiness(business: Business) {
         if (!isTimerGoing) {
             currentBusiness = business
-            currentBusiness!!.isComplete = false
             indexCurrentBusiness = secModel.getIndexOfElement(business)
-            secModel.changeBusiness(currentBusiness!!, indexCurrentBusiness)
             isTimerGoing = true
         } else {
             viewState.showToast(SeKaundaApplication.instance.getString(R.string.finish_prev_task))
@@ -72,6 +63,13 @@ class SecPresenter : MvpPresenter<SecView>(){
 
     fun renameBusiness(newBusiness: Business, oldBusiness: Business) {
         secModel.changeBusiness(newBusiness, secModel.getIndexOfElement(oldBusiness))
+    }
+
+    fun updateData() {
+        viewState.updateRecyclerView()
+    }
+    fun showError(string: String){
+        viewState.showError(string)
     }
 
 }

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager.widget.ViewPager
-import com.example.sekunda.Data.DayPagerAdapter
+import com.example.sekunda.data.DayPagerAdapter
 import com.example.sekunda.R
 
 class HistoryFragment : Fragment() {

@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.sekunda.Data.Business
+import com.example.sekunda.data.Business
 import com.example.sekunda.MainActivity.Companion.newIntent
 import com.example.sekunda.R
 import com.example.sekunda.fragments.BaseFragment
@@ -30,8 +30,7 @@ class SecFragment : BaseFragment(), SecView {
 
     override fun initialize() {
 
-        recyclerAdapter = BusinessRecyclerAdapter(presenter.getBusinessList())
-        //mIndexCurrentBusiness = mRecyclerAdapter.findIndex(mCurrentBusiness)
+        recyclerAdapter = BusinessRecyclerAdapter(presenter)
 
         secRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         secRecyclerView.adapter = recyclerAdapter
@@ -45,12 +44,6 @@ class SecFragment : BaseFragment(), SecView {
     override fun getContentView(): Int {
         return R.layout.fragment_sec
     }
-
-    private fun printInfo(business: Business?) {
-        secTextViewName.text = business!!.name
-        secTextViewTimer.text = business.time
-    }
-
 
     private fun createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
@@ -115,7 +108,6 @@ class SecFragment : BaseFragment(), SecView {
     }
 
     override fun stopTimer(business: Business, businessIndex: Int) {
-        //recyclerAdapter.changeItem(business, businessIndex)
         recyclerAdapter.notifyItemChanged(businessIndex)
         secTextViewTimer.setText(R.string.time_to_do)
         secTextViewName.text = ""
@@ -127,6 +119,14 @@ class SecFragment : BaseFragment(), SecView {
         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
+    override fun updateRecyclerView() {
+        recyclerAdapter.notifyDataSetChanged()
+    }
+
+    override fun notifyItemInserted(index: Int) {
+        recyclerAdapter.notifyItemInserted(index)
+    }
+
     private fun startTimer(business: Business, isResume: Boolean = false) {
         secTextViewName.text = business.name
         secButtonNew.setImageResource(R.drawable.ic_stop_black_24dp)
@@ -134,6 +134,10 @@ class SecFragment : BaseFragment(), SecView {
         if (!isResume){
             presenter.startTimer(business)
         }
+    }
+
+    override fun showError(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
 
