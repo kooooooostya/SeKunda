@@ -40,7 +40,7 @@ class SecModel(private val presenter: SecPresenter) {
     }
 
     fun changeBusiness(newBusiness: Business, index: Int) {
-        if(idLastInsertedBusiness != null){
+        if(newBusiness._id == null){
             newBusiness._id = idLastInsertedBusiness
             idLastInsertedBusiness = null
         }

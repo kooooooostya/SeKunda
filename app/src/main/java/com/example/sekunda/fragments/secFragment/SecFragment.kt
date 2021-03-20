@@ -1,20 +1,16 @@
 package com.example.sekunda.fragments.secFragment
 
-import android.app.*
-import android.content.Context
+import android.app.AlertDialog
 import android.graphics.Canvas
-import android.os.Build
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.Toast
-import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.sekunda.data.Business
-import com.example.sekunda.MainActivity.Companion.newIntent
 import com.example.sekunda.R
+import com.example.sekunda.data.Business
 import com.example.sekunda.fragments.BaseFragment
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.fragment_sec.*
@@ -45,47 +41,7 @@ class SecFragment : BaseFragment(), SecView {
         return R.layout.fragment_sec
     }
 
-    private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name: CharSequence = getString(R.string.channel_name)
-            val description = getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_LOW
-            val channel = NotificationChannel(CHANNEL_ID.toString(), name, importance)
-            channel.description = description
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            val notificationManager = requireActivity().getSystemService(NotificationManager::class.java)!!
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
 
-    // Creates notification
-    private fun createNotification() {
-        createNotificationChannel()
-        val builder = NotificationCompat.Builder(requireContext(), CHANNEL_ID.toString())
-        val pendingIntent = PendingIntent.getActivity(requireContext(),
-                0, newIntent(requireContext()), 0)
-
-        //TODO change icon
-        builder.setContentText(getString(R.string.channel_description))
-                .setSmallIcon(R.drawable.ic_play_arrow_black_24dp)
-                .setContentIntent(pendingIntent)
-                .setContentTitle(getString(R.string.app_name)).priority = Notification.PRIORITY_DEFAULT
-        val notificationManager = (requireActivity().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-        notificationManager.notify(CHANNEL_ID, builder.build())
-    }
-
-    //Cancel Notification
-    private fun cancelNotification() {
-        val notificationManager = (requireActivity().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-        notificationManager.cancel(CHANNEL_ID)
-    }
-
-    companion object {
-        private const val CHANNEL_ID = 152
-    }
 
     override fun updateTimer(time: String) {
         secTextViewTimer.text = time
@@ -112,7 +68,6 @@ class SecFragment : BaseFragment(), SecView {
         secTextViewTimer.setText(R.string.time_to_do)
         secTextViewName.text = ""
         secButtonNew.setImageResource(R.drawable.ic_play_arrow_black_24dp)
-        cancelNotification()
     }
 
     override fun showToast(message: String) {
@@ -130,7 +85,6 @@ class SecFragment : BaseFragment(), SecView {
     private fun startTimer(business: Business, isResume: Boolean = false) {
         secTextViewName.text = business.name
         secButtonNew.setImageResource(R.drawable.ic_stop_black_24dp)
-        createNotification()
         if (!isResume){
             presenter.startTimer(business)
         }
@@ -166,9 +120,7 @@ class SecFragment : BaseFragment(), SecView {
                     editTextName.setText(oldBusiness.name)
 
                     builder.setPositiveButton(R.string.button_ok) { _, _ ->
-                        val newBusiness = oldBusiness.clone() as Business
-                        newBusiness.name = editTextName.text.toString()
-                        presenter.renameBusiness(newBusiness, oldBusiness)
+                        presenter.renameBusiness(oldBusiness, editTextName.text.toString())
                         recyclerAdapter.notifyItemChanged(viewHolder.adapterPosition)
                     }
                     builder.create().show()
