@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sekunda.R
 import com.example.sekunda.data.Business
+import com.example.sekunda.data.BusinessRVAdapter
 import com.example.sekunda.fragments.BaseFragment
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.fragment_sec.*
@@ -21,15 +22,15 @@ class SecFragment : BaseFragment(), SecView {
     @InjectPresenter
     lateinit var presenter: SecPresenter
 
-    lateinit var recyclerAdapter: BusinessRecyclerAdapter
+    lateinit var mRVAdapter: BusinessRVAdapter
 
 
     override fun initialize() {
 
-        recyclerAdapter = BusinessRecyclerAdapter(presenter)
+        mRVAdapter = BusinessRVAdapter(presenter)
 
         secRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        secRecyclerView.adapter = recyclerAdapter
+        secRecyclerView.adapter = mRVAdapter
 
         secButtonNew.setOnClickListener {
             presenter.startOrStopTimer()
@@ -64,7 +65,7 @@ class SecFragment : BaseFragment(), SecView {
     }
 
     override fun stopTimer(business: Business, businessIndex: Int) {
-        recyclerAdapter.notifyItemChanged(businessIndex)
+        mRVAdapter.notifyItemChanged(businessIndex)
         secTextViewTimer.setText(R.string.time_to_do)
         secTextViewName.text = ""
         secButtonNew.setImageResource(R.drawable.ic_play_arrow_black_24dp)
@@ -75,11 +76,11 @@ class SecFragment : BaseFragment(), SecView {
     }
 
     override fun updateRecyclerView() {
-        recyclerAdapter.notifyDataSetChanged()
+        mRVAdapter.notifyDataSetChanged()
     }
 
     override fun notifyItemInserted(index: Int) {
-        recyclerAdapter.notifyItemInserted(index)
+        mRVAdapter.notifyItemInserted(index)
     }
 
     private fun startTimer(business: Business, isResume: Boolean = false) {
@@ -106,8 +107,8 @@ class SecFragment : BaseFragment(), SecView {
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             when (direction) {
                 ItemTouchHelper.LEFT ->{
-                    startTimer(recyclerAdapter.getItem(viewHolder.adapterPosition), true)
-                    presenter.resumeBusiness(recyclerAdapter.getItem(viewHolder.adapterPosition))
+                    startTimer(mRVAdapter.getItem(viewHolder.adapterPosition), true)
+                    presenter.resumeBusiness(mRVAdapter.getItem(viewHolder.adapterPosition))
                 }
                 ItemTouchHelper.RIGHT -> {
                     val builder = AlertDialog.Builder(requireContext())
@@ -116,12 +117,12 @@ class SecFragment : BaseFragment(), SecView {
                     builder.setTitle("Rename task")
                     builder.setView(inputDialog)
 
-                    val oldBusiness = recyclerAdapter.getItem(viewHolder.adapterPosition)
+                    val oldBusiness = mRVAdapter.getItem(viewHolder.adapterPosition)
                     editTextName.setText(oldBusiness.name)
 
                     builder.setPositiveButton(R.string.button_ok) { _, _ ->
                         presenter.renameBusiness(oldBusiness, editTextName.text.toString())
-                        recyclerAdapter.notifyItemChanged(viewHolder.adapterPosition)
+                        mRVAdapter.notifyItemChanged(viewHolder.adapterPosition)
                     }
                     builder.create().show()
                 }

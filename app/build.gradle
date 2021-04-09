@@ -37,6 +37,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.room:room-runtime:2.2.6'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
     //JUnit
     testImplementation 'junit:junit:4.13.2'

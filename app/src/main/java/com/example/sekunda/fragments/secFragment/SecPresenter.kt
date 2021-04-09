@@ -12,8 +12,9 @@ import com.example.sekunda.MainActivity
 import com.example.sekunda.data.Business
 import com.example.sekunda.R
 import com.example.sekunda.SeKaundaApplication
+import com.example.sekunda.data.BusinessListProvider
 import moxy.MvpPresenter
-class SecPresenter : MvpPresenter<SecView>(){
+class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
 
     private val secModel = SecModel(this)
     private var isTimerGoing = false
@@ -110,7 +111,7 @@ class SecPresenter : MvpPresenter<SecView>(){
         private const val CHANNEL_ID = 152
     }
 
-    fun getBusinessList() : ArrayList<Business>{
+    override fun getBusinessList() : ArrayList<Business>{
         return secModel.businessArrayList
     }
 

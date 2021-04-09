@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Switch
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.fragment.app.DialogFragment
@@ -16,7 +17,7 @@ class SettingsFragment : DialogFragment() {
                               savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_settings, container, false)
         val aButton = root.findViewById<Button>(R.id.settings_button_ok)
-        val aSwitch: SwitchCompat = root.findViewById(R.id.settings_switch)
+        val aSwitch: Switch = root.findViewById(R.id.settings_switch)
         aSwitch.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)

@@ -22,7 +22,7 @@
     </fragment>
     <fragment
         android:id="@+id/historyFragment"
-        android:name="com.example.sekunda.fragments.HistoryFragment"
+        android:name="com.example.sekunda.fragments.historyFragment.HistoryFragment"
         android:label="activity_history"
         tools:layout="@layout/fragment_history" >
         <action
