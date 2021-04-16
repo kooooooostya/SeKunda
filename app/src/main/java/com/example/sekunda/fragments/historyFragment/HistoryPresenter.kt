@@ -5,7 +5,7 @@ import com.example.sekunda.data.BusinessListProvider
 import com.example.sekunda.data.Day
 
 class HistoryPresenter : BusinessListProvider {
-    private val model = HistoryModel(this)
+    private val model = HistoryModel()
 
 
     override fun getBusinessList(): ArrayList<Business> {
