@@ -16,7 +16,11 @@ class BusinessRVAdapter(private val dataProvider: BusinessListProvider) :
     }
 
     override fun onBindViewHolder(holder: BusinessViewHolder, position: Int) {
-        holder.mTextViewTime.text = dataProvider.getBusinessList()[position].time
+        if (dataProvider.getBusinessList()[position].isRunning){
+            holder.mTextViewTime.text = Business.RUNNING
+        }else{
+            holder.mTextViewTime.text = dataProvider.getBusinessList()[position].time
+        }
         holder.mTextViewName.text = dataProvider.getBusinessList()[position].name
     }
 

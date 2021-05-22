@@ -4,11 +4,13 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.jvm.Throws
 
 @Entity(tableName = "business_table")
 class Business(var name: String,
                var seconds: Int,
                val timeStart: String = SimpleDateFormat(DMY_PATTERN, Locale.ENGLISH).format(Calendar.getInstance().time),
+               var isRunning: Boolean = true,
                @PrimaryKey(autoGenerate = true)
                var _id: Long? = null
                 )
@@ -16,6 +18,7 @@ class Business(var name: String,
 
     companion object{
         const val DMY_PATTERN = "dd-MM-yyyy"
+        const val RUNNING = "In progress"
     }
 
     fun addOneSecond() {
@@ -47,6 +50,6 @@ class Business(var name: String,
     @Throws(CloneNotSupportedException::class)
     public override fun clone(): Any {
         super.clone()
-        return Business(name, seconds, timeStart)
+        return Business(name, seconds, timeStart, isRunning)
     }
 }

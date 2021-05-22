@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.example.sekunda.R
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HistoryFragment : Fragment() {
     private lateinit var mViewPager: ViewPager2
@@ -18,14 +21,21 @@ class HistoryFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_history, container, false)
-        mDayPagerAdapter = DayPagerAdapter(presenter)
+
         mViewPager = root.findViewById(R.id.history_pager)
+
+        var dayList = presenter.getEmptyDayList()
+        mDayPagerAdapter = DayPagerAdapter(dayList)
         mViewPager.adapter = mDayPagerAdapter
 
-        return root
-    }
 
-    override fun onDetach() {
-        super.onDetach()
+        GlobalScope.launch (Dispatchers.IO){
+            dayList = presenter.getDays()
+            withContext(Dispatchers.Main) {
+                mDayPagerAdapter.setDayList(dayList)
+                mDayPagerAdapter.notifyDataSetChanged()
+            }
+        }
+        return root
     }
 }

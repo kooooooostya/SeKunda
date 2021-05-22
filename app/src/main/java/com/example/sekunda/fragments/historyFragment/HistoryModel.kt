@@ -3,32 +3,24 @@ package com.example.sekunda.fragments.historyFragment
 import com.example.sekunda.SeKaundaApplication
 import com.example.sekunda.data.Business
 import com.example.sekunda.data.Day
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
 class HistoryModel {
 
-    val businessArrayList: ArrayList<Business> = ArrayList()
-    val dayArrayList = ArrayList<Day>()
-
-    init {
+    suspend fun getDays(): ArrayList<Day>{
         val calendar = Calendar.getInstance()
+        val dayArrayList = ArrayList<Day>()
         for (i in 0 until 7) {
             dayArrayList.add(Day(calendar.clone() as Calendar, getBusinessList(calendar)))
             calendar.add(Calendar.DAY_OF_YEAR, -1)
         }
+        return dayArrayList
     }
 
     private fun getBusinessList(calendar: Calendar): ArrayList<Business> {
-        val list: ArrayList<Business> = ArrayList()
-        GlobalScope.launch(Dispatchers.IO) {
-            list.addAll(SeKaundaApplication.db.businessDao().getFulledList(
-                    SimpleDateFormat(Business.DMY_PATTERN).format(calendar.time)))
-        }
-        return list
+        return ArrayList(SeKaundaApplication.db.businessDao().getFulledList(
+                SimpleDateFormat(Business.DMY_PATTERN, Locale.ENGLISH).format(calendar.time)))
     }
 }

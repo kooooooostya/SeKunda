@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class Day(private val mCalendar: Calendar, val businessArrayList: ArrayList<Business>) {
+class Day(private val mCalendar: Calendar, val businessArrayList: ArrayList<Business> = ArrayList()) {
 
     private val mAllSeconds: Int
 

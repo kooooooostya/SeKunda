@@ -7,17 +7,24 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sekunda.R
+import com.example.sekunda.data.Day
 import com.example.sekunda.data.SimpleBusinessRVAdapter
 
-class DayPagerAdapter(private val presenter: HistoryPresenter) : RecyclerView.Adapter<DayPagerAdapter.DayViewHolder>() {
+class DayPagerAdapter(private var dayList: ArrayList<Day>) : RecyclerView.Adapter<DayPagerAdapter.DayViewHolder>() {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.pager_item, parent, false)
         return DayViewHolder(itemView)
     }
 
+    fun setDayList(dayList: ArrayList<Day>){
+        this.dayList = dayList
+    }
+
     override fun onBindViewHolder(holder: DayViewHolder, position: Int) {
-        val day = presenter.getDayList()[position]
+
+        val day = dayList[position]
 
         holder.textViewDate.text = day.dmyTime
         holder.textViewTotalTime.text = day.hmsTime
