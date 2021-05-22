@@ -29,5 +29,6 @@
     <string name="time_to_do">Time to do</string>
     <string name="add_button_cd">Start or stop timer</string>
     <string name="finish_prev_task">Finish the previous task first</string>
+    <string name="tack_running">Task in progress</string>
 
 </resources>

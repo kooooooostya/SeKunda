@@ -13,6 +13,11 @@ import com.example.sekunda.data.Business
 import com.example.sekunda.R
 import com.example.sekunda.SeKaundaApplication
 import com.example.sekunda.data.BusinessListProvider
+import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import moxy.MvpPresenter
 class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
 
@@ -57,21 +62,19 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
     }
 
     private fun runTimer() {
-        val handler = Handler()
-        handler.post(object : Runnable {
-            override fun run() {
-                if (isTimerGoing) {
+
+        GlobalScope.launch(Dispatchers.Main) {
+            while (true){
+                if (isTimerGoing){
                     viewState.updateTimer(currentBusiness!!.time)
                     currentBusiness!!.addOneSecond()
                 }
-                handler.postDelayed(this, 1000)
+                delay(1000)
             }
-        })
+        }
     }
 
     private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val application = SeKaundaApplication.instance
             val name: CharSequence = application.getString(R.string.channel_name)
@@ -79,8 +82,6 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
             val importance = NotificationManager.IMPORTANCE_LOW
             val channel = NotificationChannel(CHANNEL_ID.toString(), name, importance)
             channel.description = description
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
             val notificationManager = application.getSystemService(NotificationManager::class.java)!!
             notificationManager.createNotificationChannel(channel)
         }
@@ -101,7 +102,7 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
         notificationManager.notify(CHANNEL_ID, builder.build())
     }
 
-    //Cancel Notification
+
     private fun cancelNotification() {
         val notificationManager = (SeKaundaApplication.instance.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
         notificationManager.cancel(CHANNEL_ID)

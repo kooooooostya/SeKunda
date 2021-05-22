@@ -24,7 +24,6 @@ class SecFragment : BaseFragment(), SecView {
 
     lateinit var mRVAdapter: BusinessRVAdapter
 
-
     override fun initialize() {
 
         mRVAdapter = BusinessRVAdapter(presenter)

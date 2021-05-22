@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.Navigation
+import androidx.navigation.ui.setupWithNavController
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,8 +17,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         val toolbar = findViewById<Toolbar>(R.id.main_tool_bar)
+        toolbar.setupWithNavController(Navigation.findNavController(this, R.id.nav_host_fragment))
         setSupportActionBar(toolbar)
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -27,6 +30,10 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.action_settings -> {
                 Navigation.findNavController(this, R.id.nav_host_fragment).navigate(R.id.settingsFragment)
+                return true
+            }
+            android.R.id.home -> {
+                onBackPressed()
                 return true
             }
         }

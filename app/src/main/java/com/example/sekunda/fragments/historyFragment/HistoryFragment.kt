@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import com.example.sekunda.R
+import kotlinx.android.synthetic.main.activity_main.*
 
 class HistoryFragment : Fragment() {
     private lateinit var mViewPager: ViewPager2
@@ -22,5 +23,9 @@ class HistoryFragment : Fragment() {
         mViewPager.adapter = mDayPagerAdapter
 
         return root
+    }
+
+    override fun onDetach() {
+        super.onDetach()
     }
 }
