@@ -13,10 +13,9 @@ class Business(var name: String,
                var isRunning: Boolean = true,
                @PrimaryKey(autoGenerate = true)
                var _id: Long? = null
-                )
-    : Comparable<Any?>, Cloneable {
+) : Comparable<Any?>, Cloneable {
 
-    companion object{
+    companion object {
         const val DMY_PATTERN = "dd-MM-yyyy"
         const val RUNNING = "In progress"
     }
@@ -51,5 +50,10 @@ class Business(var name: String,
     public override fun clone(): Any {
         super.clone()
         return Business(name, seconds, timeStart, isRunning)
+    }
+
+    fun timeOrRunning(): String {
+        return if (isRunning) RUNNING
+        else time
     }
 }

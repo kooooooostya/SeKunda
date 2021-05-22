@@ -16,11 +16,8 @@ class BusinessRVAdapter(private val dataProvider: BusinessListProvider) :
     }
 
     override fun onBindViewHolder(holder: BusinessViewHolder, position: Int) {
-        if (dataProvider.getBusinessList()[position].isRunning){
-            holder.mTextViewTime.text = Business.RUNNING
-        }else{
-            holder.mTextViewTime.text = dataProvider.getBusinessList()[position].time
-        }
+        holder.mTextViewTime.text = dataProvider.getBusinessList()[position].timeOrRunning()
+
         holder.mTextViewName.text = dataProvider.getBusinessList()[position].name
     }
 
@@ -32,9 +29,12 @@ class BusinessRVAdapter(private val dataProvider: BusinessListProvider) :
         return dataProvider.getBusinessList()[index]
     }
 
+
     class BusinessViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var mTextViewName: TextView = itemView.findViewById(R.id.item_view_holder_text_view_name)
         var mTextViewTime: TextView = itemView.findViewById(R.id.item_view_holder_text_view_time)
     }
+
+
 }
 

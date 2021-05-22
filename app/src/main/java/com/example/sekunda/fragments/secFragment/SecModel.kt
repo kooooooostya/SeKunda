@@ -2,9 +2,7 @@ package com.example.sekunda.fragments.secFragment
 
 import com.example.sekunda.SeKaundaApplication
 import com.example.sekunda.data.Business
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -18,18 +16,14 @@ class SecModel(private val presenter: SecPresenter) {
     private var idLastInsertedBusiness: Long? = null
 
     init {
-        val observer = getBusinessFromDb(calendar)
-                .subscribeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (it != null) {
-                        businessArrayList = it
-                    }
-                }, {
-                    presenter.showError(it.message!!)
-                }, {
-                    presenter.updateData()
-                })
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                businessArrayList = getBusinessFromDb(calendar)
+                presenter.updateData()
+            }catch (e: Exception){
+                e.message?.let { presenter.showError(it) }
+            }
+        }
     }
 
     fun insertBusiness(business: Business) {
@@ -40,7 +34,7 @@ class SecModel(private val presenter: SecPresenter) {
     }
 
     fun changeBusiness(newBusiness: Business, index: Int) {
-        if(newBusiness._id == null){
+        if (newBusiness._id == null) {
             newBusiness._id = idLastInsertedBusiness
             idLastInsertedBusiness = null
         }
@@ -54,15 +48,12 @@ class SecModel(private val presenter: SecPresenter) {
         return businessArrayList.indexOf(business)
     }
 
-    private fun getBusinessFromDb(calendar: Calendar): Observable<ArrayList<Business>> {
-        return Observable.create {
-            val businesses = SeKaundaApplication.db.businessDao().getFulledList(SimpleDateFormat(Business.DMY_PATTERN, Locale.ENGLISH).format(calendar.time))
-
-            if (businesses.isNotEmpty()) {
-                it.onNext(ArrayList(businesses))
-                it.onComplete()
-            }
-        }
+    private fun getBusinessFromDb(calendar: Calendar): ArrayList<Business> {
+        return ArrayList(
+                SeKaundaApplication.db.businessDao().getFulledList(
+                        SimpleDateFormat(Business.DMY_PATTERN, Locale.ENGLISH).format(calendar.time)
+                )
+        )
     }
 }
 

@@ -42,7 +42,6 @@ class SecFragment : BaseFragment(), SecView {
     }
 
 
-
     override fun updateTimer(time: String) {
         secTextViewTimer.text = time
     }
@@ -85,7 +84,7 @@ class SecFragment : BaseFragment(), SecView {
     private fun startTimer(business: Business, isResume: Boolean = false) {
         secTextViewName.text = business.name
         secButtonNew.setImageResource(R.drawable.ic_stop_black_24dp)
-        if (!isResume){
+        if (!isResume) {
             presenter.startTimer(business)
         }
     }
@@ -105,9 +104,11 @@ class SecFragment : BaseFragment(), SecView {
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             when (direction) {
-                ItemTouchHelper.LEFT ->{
+                ItemTouchHelper.LEFT -> {
                     startTimer(mRVAdapter.getItem(viewHolder.adapterPosition), true)
                     presenter.resumeBusiness(mRVAdapter.getItem(viewHolder.adapterPosition))
+
+                    mRVAdapter.notifyItemChanged(viewHolder.layoutPosition)
                 }
                 ItemTouchHelper.RIGHT -> {
                     val builder = AlertDialog.Builder(requireContext())

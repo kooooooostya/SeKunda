@@ -43,6 +43,7 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
     fun resumeBusiness(business: Business) {
         if (!isTimerGoing) {
             createNotification()
+            business.isRunning = true
             currentBusiness = business
             indexCurrentBusiness = secModel.getIndexOfElement(business)
             isTimerGoing = true
@@ -53,6 +54,7 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
 
     fun startTimer(business: Business) {
         createNotification()
+        business.isRunning = true
         currentBusiness = business
         secModel.insertBusiness(business)
         indexCurrentBusiness = secModel.getIndexOfElement(business)
