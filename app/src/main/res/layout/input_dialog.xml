@@ -4,16 +4,23 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/input_dialog_editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
-        android:autofillHints="@string/hint_write_name"
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_marginTop="@dimen/medium_padding"
+        android:layout_marginBottom="@dimen/medium_padding"
         android:layout_marginStart="@dimen/large_padding"
-        android:ems="10"
-        android:hint="@string/hint_write_name"
-        android:inputType="text" />
+        android:layout_marginEnd="@dimen/large_padding"
+        android:layout_width="match_parent"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_write_name">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/input_dialog_text_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 
 </LinearLayout>

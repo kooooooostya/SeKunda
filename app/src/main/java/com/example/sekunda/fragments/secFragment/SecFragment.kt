@@ -13,6 +13,7 @@ import com.example.sekunda.R
 import com.example.sekunda.data.Business
 import com.example.sekunda.data.BusinessRVAdapter
 import com.example.sekunda.fragments.BaseFragment
+import com.google.android.material.textfield.TextInputEditText
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.fragment_sec.*
 import moxy.presenter.InjectPresenter
@@ -51,10 +52,10 @@ class SecFragment : BaseFragment(), SecView {
         val inputDialog = LayoutInflater.from(requireContext()).inflate(R.layout.input_dialog, null, false)
         builder.setTitle("Write name of task")
         builder.setView(inputDialog)
-        val editTextName = inputDialog.findViewById<EditText>(R.id.input_dialog_editText)
+        val editTextName = inputDialog.findViewById<TextInputEditText>(R.id.input_dialog_text_field)
 
         builder.setPositiveButton(R.string.button_ok) { _, _ ->
-            if (editTextName.text.isNotEmpty()) {
+            if (editTextName.text?.isNotEmpty() == true) {
                 val business = Business(editTextName.text.toString(), 0)
                 startTimer(business)
             }
@@ -113,7 +114,7 @@ class SecFragment : BaseFragment(), SecView {
                 ItemTouchHelper.RIGHT -> {
                     val builder = AlertDialog.Builder(requireContext())
                     val inputDialog = LayoutInflater.from(requireContext()).inflate(R.layout.input_dialog, null, false)
-                    val editTextName = inputDialog.findViewById<EditText>(R.id.input_dialog_editText)
+                    val editTextName = inputDialog.findViewById<EditText>(R.id.input_dialog_text_field)
                     builder.setTitle("Rename task")
                     builder.setView(inputDialog)
 

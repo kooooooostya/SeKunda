@@ -7,6 +7,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
+        <item name="fontFamily">@font/montserrat_medium</item>
+
         <item name="android:colorPressedHighlight">@color/colorPrimaryLight</item>
 
 
