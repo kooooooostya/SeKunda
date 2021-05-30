@@ -1,9 +1,10 @@
-package com.example.sekunda
+package com.example.sekunda.views
 
 import android.app.Activity
 import android.app.AlertDialog
 import android.graphics.drawable.ColorDrawable
 import android.view.Window
+import com.example.sekunda.R
 
 
 class WaitingDialog(var activity: Activity) {

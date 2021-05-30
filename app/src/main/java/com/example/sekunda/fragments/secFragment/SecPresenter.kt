@@ -16,6 +16,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import moxy.MvpPresenter
+import java.util.*
+import kotlin.collections.ArrayList
 
 class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
 
@@ -52,6 +54,18 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
         }
     }
 
+    fun resumeBusiness(lastTime: Long, index: Long) {
+        if (!isTimerGoing) {
+            createNotification()
+            currentBusiness = secModel.businessArrayList.find { it._id == index }
+            indexCurrentBusiness = secModel.getIndexOfElement(currentBusiness!!)
+            currentBusiness!!.seconds += ((Date().time - lastTime) / 1000).toInt()
+            isTimerGoing = true
+        } else {
+            viewState.showToast(SeKaundaApplication.instance.getString(R.string.finish_prev_task))
+        }
+    }
+
     fun startTimer(business: Business) {
         createNotification()
         business.isRunning = true
@@ -63,7 +77,6 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
     }
 
     private fun runTimer() {
-
         GlobalScope.launch(Dispatchers.Main) {
             while (true) {
                 if (isTimerGoing) {
@@ -132,6 +145,18 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
 
     fun showError(string: String) {
         viewState.showError(string)
+    }
+
+    fun isCurrentBusinessRunning(): Boolean{
+        return currentBusiness?.isRunning == true
+    }
+
+    fun getCurrentBusinessDbIndex(): Long {
+        var res =  currentBusiness?._id
+        if (res == null){
+            res = secModel.getLastInsertedId()
+        }
+        return res
     }
 
 }

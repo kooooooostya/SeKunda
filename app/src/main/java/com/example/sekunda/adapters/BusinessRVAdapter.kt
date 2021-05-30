@@ -1,4 +1,4 @@
-package com.example.sekunda.data
+package com.example.sekunda.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sekunda.R
+import com.example.sekunda.data.Business
+import com.example.sekunda.data.BusinessListProvider
 
 class BusinessRVAdapter(private val dataProvider: BusinessListProvider) :
         RecyclerView.Adapter<BusinessRVAdapter.BusinessViewHolder>() {
@@ -25,7 +27,7 @@ class BusinessRVAdapter(private val dataProvider: BusinessListProvider) :
         return dataProvider.getBusinessList().size
     }
 
-    fun getItem(index: Int): Business{
+    fun getItem(index: Int): Business {
         return dataProvider.getBusinessList()[index]
     }
 

@@ -10,13 +10,21 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sekunda.R
+import com.example.sekunda.adapters.BusinessRVAdapter
 import com.example.sekunda.data.Business
-import com.example.sekunda.data.BusinessRVAdapter
 import com.example.sekunda.fragments.BaseFragment
+import com.example.sekunda.tools.getLongFromSharedPref
+import com.example.sekunda.tools.isContainedInSharedPref
+import com.example.sekunda.tools.removeFromSharedPref
+import com.example.sekunda.tools.setLongToSharedPref
 import com.google.android.material.textfield.TextInputEditText
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.fragment_sec.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import moxy.presenter.InjectPresenter
+import java.util.*
 
 class SecFragment : BaseFragment(), SecView {
 
@@ -25,8 +33,10 @@ class SecFragment : BaseFragment(), SecView {
 
     lateinit var mRVAdapter: BusinessRVAdapter
 
-    override fun initialize() {
+    private val prefTimeKey = "pref_time"
+    private val prefIndexKey = "pref_name"
 
+    override fun initialize() {
         mRVAdapter = BusinessRVAdapter(presenter)
 
         secRecyclerView.layoutManager = LinearLayoutManager(requireContext())
@@ -36,12 +46,38 @@ class SecFragment : BaseFragment(), SecView {
             presenter.startOrStopTimer()
         }
         itemTouchHelper.attachToRecyclerView(secRecyclerView)
+
+        checkNotFinished()
+    }
+
+    private fun checkNotFinished(){
+        if (isContainedInSharedPref(prefTimeKey)){
+            val time = getLongFromSharedPref(prefTimeKey, -1)
+            val index = getLongFromSharedPref(prefIndexKey, -1)
+
+            if (time.toInt() != -1 && index.toInt() != -1){
+                presenter.resumeBusiness(time, index)
+                secButtonNew.setImageResource(R.drawable.ic_stop_black_24dp)
+            }
+        }
+
+    }
+
+    private fun writeNotFinished(){
+        if (presenter.isCurrentBusinessRunning()) {
+            setLongToSharedPref(prefTimeKey, Date().time)
+            setLongToSharedPref(prefIndexKey, presenter.getCurrentBusinessDbIndex())
+        }
+    }
+
+    private fun removeNotFinished(){
+        removeFromSharedPref(prefTimeKey)
+        removeFromSharedPref(prefIndexKey)
     }
 
     override fun getContentView(): Int {
         return R.layout.fragment_sec
     }
-
 
     override fun updateTimer(time: String) {
         secTextViewTimer.text = time
@@ -68,6 +104,8 @@ class SecFragment : BaseFragment(), SecView {
         secTextViewTimer.setText(R.string.time_to_do)
         secTextViewName.text = ""
         secButtonNew.setImageResource(R.drawable.ic_play_arrow_black_24dp)
+
+        GlobalScope.launch (Dispatchers.IO) { removeNotFinished() }
     }
 
     override fun showToast(message: String) {
@@ -88,6 +126,7 @@ class SecFragment : BaseFragment(), SecView {
         if (!isResume) {
             presenter.startTimer(business)
         }
+        GlobalScope.launch(Dispatchers.IO) { writeNotFinished() }
     }
 
     override fun showError(message: String) {
@@ -142,4 +181,6 @@ class SecFragment : BaseFragment(), SecView {
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
         }
     })
+
+
 }

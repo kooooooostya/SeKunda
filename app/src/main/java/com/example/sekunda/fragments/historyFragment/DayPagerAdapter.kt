@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sekunda.R
 import com.example.sekunda.data.Day
-import com.example.sekunda.data.SimpleBusinessRVAdapter
+import com.example.sekunda.adapters.SimpleBusinessRVAdapter
 
 class DayPagerAdapter(private var dayList: ArrayList<Day>) : RecyclerView.Adapter<DayPagerAdapter.DayViewHolder>() {
 

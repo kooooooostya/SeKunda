@@ -15,6 +15,7 @@ class SecModel(private val presenter: SecPresenter) {
     private val calendar: Calendar = Calendar.getInstance()
     private var idLastInsertedBusiness: Long? = null
 
+
     init {
         GlobalScope.launch(Dispatchers.IO) {
             try {
@@ -28,7 +29,7 @@ class SecModel(private val presenter: SecPresenter) {
 
     fun insertBusiness(business: Business) {
         businessArrayList.add(0, business)
-        GlobalScope.launch {
+        GlobalScope.launch (Dispatchers.IO) {
             idLastInsertedBusiness = SeKaundaApplication.db.businessDao().insert(business)
         }
     }
@@ -54,6 +55,10 @@ class SecModel(private val presenter: SecPresenter) {
                         SimpleDateFormat(Business.DMY_PATTERN, Locale.ENGLISH).format(calendar.time)
                 )
         )
+    }
+
+    fun getLastInsertedId(): Long {
+        return idLastInsertedBusiness ?: businessArrayList.last()._id?.plus(1)!!
     }
 }
 

@@ -1,9 +1,10 @@
-package com.example.sekunda.data
+package com.example.sekunda.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sekunda.R
+import com.example.sekunda.data.Business
 
 class SimpleBusinessRVAdapter(private val businessArray: ArrayList<Business>) : RecyclerView.Adapter<BusinessRVAdapter.BusinessViewHolder>() {
 
