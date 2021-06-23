@@ -58,7 +58,7 @@ class SecModel(private val presenter: SecPresenter) {
     }
 
     fun getLastInsertedId(): Long {
-        return idLastInsertedBusiness ?: businessArrayList.last()._id?.plus(1)!!
+        return idLastInsertedBusiness ?: businessArrayList.last()._id?.plus(1) ?: 0
     }
 }
 

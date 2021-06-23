@@ -1,4 +1,4 @@
-package com.example.sekunda.fragments.historyFragment
+package com.example.sekunda.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sekunda.R
 import com.example.sekunda.data.Day
-import com.example.sekunda.adapters.SimpleBusinessRVAdapter
 
 class DayPagerAdapter(private var dayList: ArrayList<Day>) : RecyclerView.Adapter<DayPagerAdapter.DayViewHolder>() {
 

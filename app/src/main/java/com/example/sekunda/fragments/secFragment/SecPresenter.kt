@@ -16,8 +16,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import moxy.MvpPresenter
-import java.util.*
-import kotlin.collections.ArrayList
 
 class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
 
@@ -28,6 +26,10 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
 
     init {
         runTimer()
+    }
+
+    companion object {
+        private const val CHANNEL_ID = 152
     }
 
     fun startOrStopTimer() {
@@ -54,12 +56,13 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
         }
     }
 
-    fun resumeBusiness(lastTime: Long, index: Long) {
+    fun resumeBusiness(millis: Long, index: Long) {
         if (!isTimerGoing) {
             createNotification()
             currentBusiness = secModel.businessArrayList.find { it._id == index }
             indexCurrentBusiness = secModel.getIndexOfElement(currentBusiness!!)
-            currentBusiness!!.seconds += ((Date().time - lastTime) / 1000).toInt()
+            currentBusiness!!.isRunning = true
+            currentBusiness!!.seconds += (millis / 1000).toInt()
             isTimerGoing = true
         } else {
             viewState.showToast(SeKaundaApplication.instance.getString(R.string.finish_prev_task))
@@ -125,10 +128,6 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
         notificationManager.cancel(CHANNEL_ID)
     }
 
-    companion object {
-        private const val CHANNEL_ID = 152
-    }
-
     override fun getBusinessList(): ArrayList<Business> {
         return secModel.businessArrayList
     }
@@ -159,4 +158,7 @@ class SecPresenter : MvpPresenter<SecView>(), BusinessListProvider {
         return res
     }
 
+    fun getCurrentBusinessMillis(): Long {
+        return (currentBusiness?.seconds ?: 0 * 1000).toLong()
+    }
 }

@@ -9,7 +9,7 @@
 
     <string name="hint_write_name">Write name</string>
     <string name="button_ok">Oks</string>
-    <string name="button_cancel">nop</string>
+    <string name="button_cancel">Cancel</string>
 
 
     <string name="menu_statistic_today">Current activities</string>
@@ -30,5 +30,12 @@
     <string name="add_button_cd">Start or stop timer</string>
     <string name="finish_prev_task">Finish the previous task first</string>
     <string name="tack_running">Task in progress</string>
+    <string name="how_much_worked_dialog_label">Oops, you are gone, please tell me how much of this time you completed the task</string>
+
+    //HowMuchWorkedDialog
+    <string name="minutes">min</string>
+    <string name="hour">hour</string>
+    <string name="button_confirm">Confirm</string>
+    <string name="seс">sec</string>
 
 </resources>
